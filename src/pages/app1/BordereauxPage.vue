@@ -142,6 +142,7 @@ import {
   type Taxe,
   DEFAULT_MAIRIE_ID,
 } from 'src/database/db';
+import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import { useAuthStore } from 'src/stores/auth-store';
 import FilterBar from 'src/components/FilterBar.vue';
 import DataTable from 'src/components/DataTable.vue';
@@ -417,8 +418,8 @@ async function onSubmit(formData: Partial<BordereauRecette>) {
         mairieId: data.mairieId ?? DEFAULT_MAIRIE_ID,
         montantTotal: data.montantTotal!,
         nombreDeclarations: data.nombreDeclarations!,
-        statut: (data.statut || 'ouvert'),
-        personnelId: (data.personnelId ?? 0),
+        statut: data.statut || 'ouvert',
+        personnelId: data.personnelId ?? 0,
         createdAt: now,
         updatedAt: now,
       };
@@ -486,36 +487,26 @@ async function printBordereau(bordereau: BordereauRecette) {
     console.log(declarationsAvecTaxes);
 
     // Ouvrir la page HTML
-    const printWindow = window.open(
+    await openPrintWindowWithMessage(
       '/bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id,
-      '_blank',
+      {
+        type: 'FILL_BORDEREAU',
+        data: {
+          mairie: mairie?.nom || '',
+          ville: mairie?.ville || 'Bodokro',
+          codeCommune: mairie?.code || 360,
+          exercice: bordereau.annee || new Date().getFullYear(),
+          numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
+          numeroSimple: bordereau.numero,
+          dateBordereau: bordereau.dateTransmission
+            ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
+            : date.formatDate(new Date(), 'DD/MM/YYYY'),
+          montantTotal: bordereau.montantTotal || 0,
+          totalPrecedent: bordereau.totalPrecedent || 0,
+          declarations: declarationsAvecTaxes,
+        },
+      },
     );
-
-    if (printWindow) {
-      printWindow.addEventListener('load', () => {
-        // Envoyer les données via postMessage
-        printWindow.postMessage(
-          {
-            type: 'FILL_BORDEREAU',
-            data: {
-              mairie: mairie?.nom || '',
-              ville: mairie?.ville || 'Azaguié',
-              codeCommune: mairie?.code || 422,
-              exercice: bordereau.annee || new Date().getFullYear(),
-              numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
-              numeroSimple: bordereau.numero,
-              dateBordereau: bordereau.dateTransmission
-                ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
-                : date.formatDate(new Date(), 'DD/MM/YYYY'),
-              montantTotal: bordereau.montantTotal || 0,
-              totalPrecedent: bordereau.totalPrecedent || 0,
-              declarations: declarationsAvecTaxes,
-            },
-          },
-          '*',
-        );
-      });
-    }
   } catch (error) {
     console.error("Erreur lors de l'impression du bordereau:", error);
     $q.notify({
@@ -549,35 +540,25 @@ async function downloadBordereauPDF(bordereau: BordereauRecette) {
     );
 
     // Ouvrir la page HTML et lancer l'impression automatiquement
-    const printWindow = window.open(
+    await openPrintWindowWithMessage(
       '/bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id,
-      '_blank',
+      {
+        type: 'FILL_AND_PRINT',
+        data: {
+          mairie: mairie?.nom || '',
+          ville: mairie?.ville || 'Bodokro',
+          codeCommune: mairie?.code || 360,
+          exercice: bordereau.annee || new Date().getFullYear(),
+          numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
+          numeroSimple: bordereau.numero,
+          dateBordereau: bordereau.dateTransmission
+            ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
+            : date.formatDate(new Date(), 'DD/MM/YYYY'),
+          montantTotal: bordereau.montantTotal || 0,
+          declarations: declarationsAvecTaxes,
+        },
+      },
     );
-
-    if (printWindow) {
-      printWindow.addEventListener('load', () => {
-        // Envoyer les données et demander l'impression
-        printWindow.postMessage(
-          {
-            type: 'FILL_AND_PRINT',
-            data: {
-              mairie: mairie?.nom || '',
-              ville: mairie?.ville || 'Azaguié',
-              codeCommune: mairie?.code || 422,
-              exercice: bordereau.annee || new Date().getFullYear(),
-              numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
-              numeroSimple: bordereau.numero,
-              dateBordereau: bordereau.dateTransmission
-                ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
-                : date.formatDate(new Date(), 'DD/MM/YYYY'),
-              montantTotal: bordereau.montantTotal || 0,
-              declarations: declarationsAvecTaxes,
-            },
-          },
-          '*',
-        );
-      });
-    }
   } catch (error) {
     console.error('Erreur lors du téléchargement PDF:', error);
     $q.notify({

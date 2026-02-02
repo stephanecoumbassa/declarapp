@@ -808,7 +808,7 @@
       }
 
       const db = new Dexie('TresorDatabase');
-      db.version(12).stores({
+      db.version(13).stores({
         mairies: '++id, nom, code, ville',
         taxes: '++id, code, libelle, mairieId, type, actif',
         declarations:
@@ -828,6 +828,7 @@
         mandats:
           '++id, numeroMandat, dateMandat, exercice, chapitreId, sousChapitreId, previsionId, bordereauMandatId, mairieId, statut, personnelId',
         bordereauMandats: '++id, numero, exercice, mairieId, statut, personnelId',
+        printData: '++id, type, createdAt',
       });
 
       document.addEventListener('DOMContentLoaded', async () => {

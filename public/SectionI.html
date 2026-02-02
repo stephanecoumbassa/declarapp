@@ -155,7 +155,7 @@
         const base = ['Date', 'Type'];
         const tail = ['Approv', 'Remise', 'Solde'];
         const cols = base
-          .concat(columns.map((c) => labels && labels[c] ? labels[c] : String(c)))
+          .concat(columns.map((c) => (labels && labels[c] ? labels[c] : String(c))))
           .concat(tail);
         head.innerHTML = cols.map((txt) => `<th>${txt}</th>`).join('');
       }
@@ -222,18 +222,50 @@
 
       window.addEventListener('message', (event) => {
         if (event.data.type === 'FILL_DATA') {
-          renderHead(event.data.columns, event.data.labels);
-          renderTable(event.data.data, event.data.columns);
+          const payload = event.data.data;
+          if (payload && payload.columns) {
+            renderHead(payload.columns, payload.labels);
+            renderTable(payload.data, payload.columns);
+            setTimeout(() => {
+              window.print();
+            }, 500);
+          }
+        }
+      });
 
-          // Mise à jour du numéro de page si nécessaire
-          // document.getElementById('page-number').textContent = ...
-
-          // Lancer l'impression après un court délai pour laisser le temps au rendu
-          setTimeout(() => {
-            window.print();
-          }, 500);
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof Dexie !== 'undefined') {
+          const db = new Dexie('TresorDatabase');
+          db.open().then(async () => {
+            const printDataCollection = await db
+              .table('printData')
+              .orderBy('id')
+              .reverse()
+              .limit(1)
+              .toArray();
+            if (printDataCollection.length > 0) {
+              const printData = printDataCollection[0];
+              const diffMs = new Date() - new Date(printData.createdAt);
+              if (
+                (printData.type === 'FILL_DATA' || printData.type === 'FILL_AND_PRINT') &&
+                diffMs < 60000
+              ) {
+                const messageData = printData.data; // { type, data: { data, columns, labels } }
+                const payload = messageData.data;
+                if (payload && payload.columns) {
+                  renderHead(payload.columns, payload.labels);
+                  renderTable(payload.data, payload.columns);
+                  await db.table('printData').delete(printData.id);
+                  setTimeout(() => {
+                    window.print();
+                  }, 500);
+                }
+              }
+            }
+          });
         }
       });
     </script>
+    <script src="dexie.min.js"></script>
   </body>
 </html>

@@ -127,6 +127,7 @@ import type {
   RawSectionIIIEntry,
 } from './types';
 import { db, DEFAULT_MAIRIE_ID } from 'src/database/db';
+import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 
 const $q = useQuasar();
 const activeTab = ref('section1');
@@ -438,7 +439,7 @@ const addMonthlyTotals = (data: AnySectionEntry[], sectionName: string) => {
   return result;
 };
 
-const printSection = (sectionName: string) => {
+const printSection = async (sectionName: string) => {
   let data: AnySectionEntry[] = [];
   let templateUrl = '';
   if (sectionName === 'section1') {
@@ -451,30 +452,27 @@ const printSection = (sectionName: string) => {
     data = JSON.parse(JSON.stringify(sectionIIIData.value));
     templateUrl = '/SectionIII.html';
   }
-  const printWindow = window.open(templateUrl, '_blank');
-  if (printWindow) {
-    const dataWithTotals = addMonthlyTotals(data, sectionName);
-    printWindow.addEventListener('load', () => {
-      printWindow.postMessage(
-        {
-          type: 'FILL_DATA',
-          data: dataWithTotals,
-          columns: activeQuotiteCols.value.map((c) => c.key),
-          labels: Object.fromEntries(activeQuotiteCols.value.map((c) => [c.key, c.label])),
-        },
-        '*',
-      );
-    });
-  }
+  const dataWithTotals = addMonthlyTotals(data, sectionName);
+
+  await openPrintWindowWithMessage(templateUrl, {
+    type: 'FILL_DATA',
+    data: {
+      data: dataWithTotals,
+      columns: activeQuotiteCols.value.map((c) => c.key),
+      labels: Object.fromEntries(activeQuotiteCols.value.map((c) => [c.key, c.label])),
+    },
+  });
 };
 
-const printCurrentSection = () => {
-  printSection(activeTab.value);
+const printCurrentSection = async () => {
+  await printSection(activeTab.value);
 };
-const printAllSections = () => {
-  printSection('section1');
-  setTimeout(() => printSection('section2'), 500);
-  setTimeout(() => printSection('section3'), 1000);
+const printAllSections = async () => {
+  await printSection('section1');
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  await printSection('section2');
+  await new Promise((resolve) => setTimeout(resolve, 500));
+  await printSection('section3');
 };
 onMounted(() => {
   void loadData();

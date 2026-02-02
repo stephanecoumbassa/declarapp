@@ -258,7 +258,7 @@ watch(
           ? date.formatDate(props.declaration.dateEncaissement, 'YYYY-MM-DD')
           : '';
       } else {
-        // Auto-assigner la Mairie d'Azaguié
+        // Auto-assigner la Mairie de Bodokro
         localForm.value = {
           mairieId: DEFAULT_MAIRIE_ID,
           exercice: new Date().getFullYear(),

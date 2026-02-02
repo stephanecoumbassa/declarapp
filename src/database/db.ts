@@ -1,6 +1,6 @@
 import Dexie, { type EntityTable } from 'dexie';
 
-// Constante pour l'ID de la mairie par défaut (Mairie d'Azaguié)
+// Constante pour l'ID de la mairie par défaut (Mairie de Bodokro)
 export const DEFAULT_MAIRIE_ID = 1;
 
 // Interfaces pour les modèles de données
@@ -254,8 +254,16 @@ export interface BordereauMandat {
   updatedAt: Date;
 }
 
+export interface PrintData {
+  id?: number;
+  type: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  data: any;
+  createdAt: Date;
+}
+
 // Classe Dexie pour la base de données
-class TresorDatabase extends Dexie {
+export class TresorDatabase extends Dexie {
   mairies!: EntityTable<Mairie, 'id'>;
   taxes!: EntityTable<Taxe, 'id'>;
   declarations!: EntityTable<Declaration, 'id'>;
@@ -273,11 +281,12 @@ class TresorDatabase extends Dexie {
   previsions!: EntityTable<Prevision, 'id'>;
   mandats!: EntityTable<Mandat, 'id'>;
   bordereauMandats!: EntityTable<BordereauMandat, 'id'>;
+  printData!: EntityTable<PrintData, 'id'>;
 
   constructor() {
     super('TresorDatabase');
 
-    this.version(12).stores({
+    this.version(13).stores({
       mairies: '++id, nom, code, ville',
       taxes: '++id, code, libelle, mairieId, type, actif',
       declarations:
@@ -297,6 +306,7 @@ class TresorDatabase extends Dexie {
       mandats:
         '++id, numeroMandat, dateMandat, exercice, chapitreId, sousChapitreId, previsionId, bordereauMandatId, mairieId, statut, personnelId',
       bordereauMandats: '++id, numero, exercice, mairieId, statut, personnelId',
+      printData: '++id, type, createdAt',
     });
   }
 }
@@ -312,15 +322,15 @@ export async function initializeDatabase() {
     // Données de démonstration
     const now = new Date();
 
-    // Créer la Mairie d'Azaguié (mairie unique de l'application)
+    // Créer la Mairie de Bodokro (mairie unique de l'application)
     const mairieId = await db.mairies.add({
-      nom: "Mairie d'Azaguié",
-      code: '422',
+      nom: 'Mairie de Bodokro',
+      code: '360',
       adresse: 'Avenue Principale',
-      ville: 'Azaguié',
+      ville: 'Bodokro',
       codePostal: '00225',
       telephone: '+225 XX XX XX XX',
-      email: 'contact@mairie-azaguie.ci',
+      email: 'contact@mairie-bodokro.ci',
       createdAt: now,
       updatedAt: now,
     });

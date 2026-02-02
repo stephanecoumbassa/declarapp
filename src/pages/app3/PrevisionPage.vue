@@ -234,6 +234,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db, type Prevision, type Chapitre, type SousChapitre, type Mandat } from 'src/database/db';
+import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import PageHeader from 'src/components/PageHeader.vue';
 import DataTable from 'src/components/DataTable.vue';
 
@@ -533,12 +534,7 @@ async function printCT02() {
     };
 
     // Ouvrir CT02.html dans une nouvelle fenêtre et lui envoyer les données
-    const ct02Window = window.open('/CT02.html', '_blank');
-    if (ct02Window) {
-      ct02Window.addEventListener('load', () => {
-        ct02Window.postMessage({ type: 'FILL_CT02_DATA', data: ct02Data }, '*');
-      });
-    }
+    await openPrintWindowWithMessage('/CT02.html', { type: 'FILL_CT02_DATA', data: ct02Data });
 
     showCT02Dialog.value = false;
   } catch (error) {

@@ -95,6 +95,7 @@ import {
   type Taxe,
   type BordereauRecette,
 } from 'src/database/db';
+import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import { useAuthStore } from 'src/stores/auth-store';
 import FilterBar from 'src/components/FilterBar.vue';
 import DataTable from 'src/components/DataTable.vue';
@@ -391,82 +392,62 @@ function confirmDelete(declaration: Declaration) {
   });
 }
 
-function printDeclaration(declaration: Declaration) {
+async function printDeclaration(declaration: Declaration) {
   const mairie = mairies.value.find((m) => m.id === declaration.mairieId);
   const taxe = taxes.value.find((t) => t.id === declaration.taxeId);
 
   // Ouvrir le nouveau template HTML
-  const printWindow = window.open(
+  await openPrintWindowWithMessage(
     '/declaration_recette_new.html?declarationId=' + declaration.id,
-    '_blank',
+    {
+      type: 'FILL_DECLARATION',
+      data: {
+        mairie: mairie?.nom || '',
+        codeCommune: mairie?.code || 360,
+        exercice: declaration.exercice,
+        article: taxe?.code || '',
+        numeroPiece: declaration.numeroPiece,
+        nomPartieVersante: declaration.nomPartieVersante,
+        adresse: declaration.adresse,
+        numeroLivre: declaration.numeroLivre || 'T31T',
+        numeroEncaissement: declaration.numeroEncaissement,
+        dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
+        natureRecette: taxe?.libelle || '',
+        montantRecette: declaration.montantRecette,
+        ville: mairie?.ville || 'Bodokro',
+        observations: declaration.observations || '',
+      },
+    },
   );
-
-  if (printWindow) {
-    printWindow.addEventListener('load', () => {
-      // Envoyer toutes les données nécessaires
-      printWindow.postMessage(
-        {
-          type: 'FILL_DECLARATION',
-          data: {
-            mairie: mairie?.nom || '',
-            codeCommune: mairie?.code || 422,
-            exercice: declaration.exercice,
-            article: taxe?.code || '',
-            numeroPiece: declaration.numeroPiece,
-            nomPartieVersante: declaration.nomPartieVersante,
-            adresse: declaration.adresse,
-            numeroLivre: declaration.numeroLivre || 'T31T',
-            numeroEncaissement: declaration.numeroEncaissement,
-            dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
-            natureRecette: taxe?.libelle || '',
-            montantRecette: declaration.montantRecette,
-            ville: mairie?.ville || 'Azaguié',
-            observations: declaration.observations || '',
-          },
-        },
-        '*',
-      );
-    });
-  }
 }
 
-function downloadDeclarationPDF(declaration: Declaration) {
+async function downloadDeclarationPDF(declaration: Declaration) {
   const mairie = mairies.value.find((m) => m.id === declaration.mairieId);
   const taxe = taxes.value.find((t) => t.id === declaration.taxeId);
 
-  // Ouvrir le template et lancer l'impression automatiquement
-  const printWindow = window.open(
+  // Utiliser l'utilitaire d'impression compatible Electron
+  await openPrintWindowWithMessage(
     '/declaration_recette_new.html?declarationId=' + declaration.id,
-    '_blank',
+    {
+      type: 'FILL_AND_PRINT',
+      data: {
+        mairie: mairie?.nom || '',
+        codeCommune: mairie?.code || 360,
+        exercice: declaration.exercice,
+        article: taxe?.code || '',
+        numeroPiece: declaration.numeroPiece,
+        nomPartieVersante: declaration.nomPartieVersante,
+        adresse: declaration.adresse,
+        numeroLivre: declaration.numeroLivre || 'T31T',
+        numeroEncaissement: declaration.numeroEncaissement,
+        dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
+        natureRecette: taxe?.libelle || '',
+        montantRecette: declaration.montantRecette,
+        ville: mairie?.ville || 'Bodokro',
+        observations: declaration.observations || '',
+      },
+    },
   );
-
-  if (printWindow) {
-    printWindow.addEventListener('load', () => {
-      // Envoyer les données et demander l'impression
-      printWindow.postMessage(
-        {
-          type: 'FILL_AND_PRINT',
-          data: {
-            mairie: mairie?.nom || '',
-            codeCommune: mairie?.code || 422,
-            exercice: declaration.exercice,
-            article: taxe?.code || '',
-            numeroPiece: declaration.numeroPiece,
-            nomPartieVersante: declaration.nomPartieVersante,
-            adresse: declaration.adresse,
-            numeroLivre: declaration.numeroLivre || 'T31T',
-            numeroEncaissement: declaration.numeroEncaissement,
-            dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
-            natureRecette: taxe?.libelle || '',
-            montantRecette: declaration.montantRecette,
-            ville: mairie?.ville || 'Azaguié',
-            observations: declaration.observations || '',
-          },
-        },
-        '*',
-      );
-    });
-  }
 }
 
 async function updateBordereauCounts(

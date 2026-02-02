@@ -67,12 +67,12 @@
       }
 
       .commune-info {
-          font-weight: bold;
-          position: absolute;
-          padding-left: 15px;
-          padding-top: 8.5px;
-          border-bottom: 1px solid;
-          width: 300px;
+        font-weight: bold;
+        position: absolute;
+        padding-left: 15px;
+        padding-top: 8.5px;
+        border-bottom: 1px solid;
+        width: 300px;
       }
 
       table {
@@ -198,7 +198,7 @@
       <div class="header">
         <div class="header-left">
           RECETTE MUNICIPALE<br />
-          DE : <span data-field="ville">Azaguié</span>
+          DE : <span data-field="ville">Bodokro</span>
         </div>
         <div class="header-center">BORDEREAU DES RECOUVREMENTS AVANT EMISSION DES ORDRES</div>
         <div class="header-right">EXERCICE : <span data-field="exercice">2025</span></div>
@@ -206,18 +206,18 @@
 
       <div class="sub-header">
         <!--<div class="commune-info">
-          COMMUNE DE : <span data-field="mairie">Mairie d'Azaguié</span><br />
-          CODE COMMUNE : <span data-field="codeCommune">422</span>
+          COMMUNE DE : <span data-field="mairie">Mairie de Bodokro</span><br />
+          CODE COMMUNE : <span data-field="codeCommune">360</span>
         </div> -->
       </div>
 
       <table>
         <thead>
-          <tr style="border-left: 1px solid #000;">
-              <div class="commune-info">
-                COMMUNE DE : <span data-field="mairie">Mairie d'Azaguié</span><br />
-                CODE COMMUNE : <span data-field="codeCommune">422</span>
-              </div>
+          <tr style="border-left: 1px solid #000">
+            <div class="commune-info">
+              COMMUNE DE : <span data-field="mairie">Mairie de Bodokro</span><br />
+              CODE COMMUNE : <span data-field="codeCommune">360</span>
+            </div>
           </tr>
           <tr>
             <th rowspan="2" class="col-numero">N°</th>
@@ -252,7 +252,7 @@
           <span data-field="montantLettres">zéro FCFA</span>
           <div class="signature-line">
             <br />
-            <span data-field="ville">Azaguié</span>, le
+            <span data-field="ville">Bodokro</span>, le
             <span data-field="dateBordereau">__/__/____</span>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <br /><br />
@@ -299,7 +299,15 @@
             >
               TOTAL GÉNÉRAL DU<br />PRÉCÉDENT ARRÊTÉ
             </div>
-            <div style="border: 1px solid #000; border-left: none; padding: 5px; flex: 1; text-align: center">
+            <div
+              style="
+                border: 1px solid #000;
+                border-left: none;
+                padding: 5px;
+                flex: 1;
+                text-align: center;
+              "
+            >
               <span data-field="totalPrecedentChiffres">0</span>
             </div>
           </div>
@@ -315,7 +323,15 @@
             >
               TOTAL GÉNÉRAL DU<br />PRÉSENT ARRÊTÉ
             </div>
-            <div style="border: 1px solid #000; border-left: none; padding: 5px; flex: 1; text-align: center">
+            <div
+              style="
+                border: 1px solid #000;
+                border-left: none;
+                padding: 5px;
+                flex: 1;
+                text-align: center;
+              "
+            >
               <span data-field="totalGeneralChiffres">0</span>
             </div>
           </div>
@@ -430,7 +446,7 @@
           .forEach((el) => (el.textContent = data.ville));
         document
           .querySelectorAll('[data-field="codeCommune"]')
-          .forEach((el) => (el.textContent = data.codeCommune ?? 422));
+          .forEach((el) => (el.textContent = data.codeCommune ?? 360));
         document
           .querySelectorAll('[data-field="exercice"]')
           .forEach((el) => (el.textContent = data.exercice));
@@ -520,7 +536,68 @@
       // Au chargement
       document.addEventListener('DOMContentLoaded', () => {
         console.log('Page de bordereau chargée et prête');
+
+        // Tenter de récupérer les données depuis Dexie (IndexedDB)
+        if (typeof Dexie !== 'undefined') {
+          const db = new Dexie('TresorDatabase');
+          db.open()
+            .then(async () => {
+              try {
+                // Récupérer le dernier élément ajouté
+                const printDataCollection = await db
+                  .table('printData')
+                  .orderBy('id')
+                  .reverse()
+                  .limit(1)
+                  .toArray();
+
+                if (printDataCollection && printDataCollection.length > 0) {
+                  const printData = printDataCollection[0];
+
+                  // Vérifier si c'est pour nous (daté de moins de 1 minute)
+                  const now = new Date();
+                  const dataTime = new Date(printData.createdAt);
+                  const diffMs = now - dataTime;
+
+                  // On accepte si c'est le bon type et récent (< 60 secondes)
+                  if (
+                    (printData.type === 'FILL_AND_PRINT' || printData.type === 'FILL_BORDEREAU') &&
+                    diffMs < 60000
+                  ) {
+                    const messageData = printData.data; // { type: ..., data: ... }
+
+                    // Vérification spécifique pour être sûr que c'est un bordereau (a des déclarations)
+                    if (
+                      messageData &&
+                      messageData.data &&
+                      messageData.data.declarations !== undefined
+                    ) {
+                      console.log('Données trouvées dans IndexedDB:', printData);
+                      remplirBordereau(messageData.data);
+
+                      // Supprimer l'enregistrement
+                      await db.table('printData').delete(printData.id);
+
+                      // Imprimer
+                      setTimeout(() => {
+                        window.print();
+                      }, 1000);
+                    }
+                  }
+                }
+              } catch (err) {
+                console.error('Erreur lors de la lecture de IndexedDB:', err);
+              }
+            })
+            .catch((err) => {
+              console.log(
+                "Impossible d'ouvrir la base de données (peut-être pas encore créée):",
+                err,
+              );
+            });
+        }
       });
     </script>
+    <script src="dexie.min.js"></script>
   </body>
 </html>

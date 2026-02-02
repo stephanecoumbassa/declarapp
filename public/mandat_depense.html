@@ -453,6 +453,44 @@
           }
         }
       });
+
+      // Dexie loading
+      document.addEventListener('DOMContentLoaded', () => {
+        if (typeof Dexie !== 'undefined') {
+          const db = new Dexie('TresorDatabase');
+          db.open().then(async () => {
+            try {
+              const printDataCollection = await db
+                .table('printData')
+                .orderBy('id')
+                .reverse()
+                .limit(1)
+                .toArray();
+              if (printDataCollection && printDataCollection.length > 0) {
+                const printData = printDataCollection[0];
+                const now = new Date();
+                const diffMs = now - new Date(printData.createdAt);
+
+                if (
+                  (printData.type === 'FILL_MANDAT' || printData.type === 'FILL_AND_PRINT') &&
+                  diffMs < 60000
+                ) {
+                  const messageData = printData.data; // { type: ..., data: ... }
+                  if (messageData && messageData.data) {
+                    console.log('Data found in IndexedDB', printData);
+                    remplirFormulaire(messageData.data);
+                    await db.table('printData').delete(printData.id);
+                    setTimeout(() => window.print(), 500);
+                  }
+                }
+              }
+            } catch (err) {
+              console.error('Error reading from IndexedDB', err);
+            }
+          });
+        }
+      });
     </script>
+    <script src="dexie.min.js"></script>
   </body>
 </html>

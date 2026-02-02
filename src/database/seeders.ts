@@ -28,13 +28,13 @@ export async function seedDefaultData() {
 
   // 1. Mairie par défaut
   const mairieId = await db.mairies.add({
-    nom: "Mairie d'Azaguié",
-    code: '422',
+    nom: 'Mairie de Bodokro',
+    code: '360',
     adresse: 'Avenue Principale',
-    ville: 'Azaguié',
+    ville: 'Bodokro',
     codePostal: '00225',
     telephone: '+225 XX XX XX XX',
-    email: 'contact@mairie-azaguie.ci',
+    email: 'contact@mairie-bodokro.ci',
     createdAt: now,
     updatedAt: now,
   });
