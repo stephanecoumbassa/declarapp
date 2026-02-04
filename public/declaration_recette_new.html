@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Déclaration de Recettes - A4</title>
+    <script src="dexie.min.js"></script>
     <style>
       /* Configuration générale pour l'impression A4 */
       @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
@@ -28,6 +29,49 @@
         font-family: 'Roboto', Helvetica, Arial, sans-serif;
         font-size: 10pt;
         color: var(--text-color);
+      }
+
+      #error-display {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #ffebee;
+        color: #c62828;
+        padding: 20px;
+        border: 2px solid #ef5350;
+        border-radius: 8px;
+        z-index: 9999;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      /* Bouton d'impression */
+      .print-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+      }
+      .print-button:hover {
+        background-color: #1565c0;
+      }
+
+      @media print {
+        .print-button {
+          display: none !important;
+        }
       }
 
       /* La page A4 */
@@ -209,6 +253,10 @@
     </style>
   </head>
   <body>
+    <div id="error-display"></div>
+    <!-- Bouton d'impression -->
+    <button class="print-button" onclick="imprimerPage()">🖨️ Imprimer</button>
+
     <!-- PAGE 1 : ORIGINAL + DUPLICATA -->
     <div class="page">
       <!-- EXEMPLAIRE 1 (ORIGINAL) -->
@@ -684,72 +732,126 @@
         }
       });
 
-      // Au chargement de la page, vérifier s'il y a des données en localStorage (pour test)
+      // Configuration IndexedDB avec Dexie
+      function showError(msg) {
+        console.error(msg);
+        const el = document.getElementById('error-display');
+        if (el) {
+          el.style.display = 'block';
+          el.innerHTML += '<p>' + msg + '</p>';
+        }
+      }
+
+      let db;
+      async function initDB() {
+        if (typeof Dexie === 'undefined') {
+          showError("Erreur critique : La librairie Dexie.js n'a pas pu être chargée.");
+          throw new Error('Dexie is undefined');
+        }
+
+        if (db) return db; // Déjà initialisé
+
+        try {
+          db = new Dexie('TresorDatabase');
+          db.version(13).stores({
+            mairies: '++id, nom, code, ville',
+            taxes: '++id, code, libelle, mairieId, type, actif',
+            declarations:
+              '++id, numeroPiece, dateEncaissement, mairieId, taxeId, statut, bordereauId, personnelId, exercice',
+            bordereauxRecette: '++id, numero, annee, mairieId, statut, personnelId',
+            utilisateurs: '++id, username, email, role, mairieId, actif',
+            approvisionnements: '++id, date, exercice, mairieId, type, personnelId',
+            remises: '++id, numeroRemise, date, exercice, mairieId, personnelId',
+            versements: '++id, numeroVersement, date, exercice, mairieId, personnelId',
+            balancesEntree: '++id, date, exercice, mairieId, type, personnelId, [exercice+mairieId]',
+            quotites: '++id, code, prix, type, mairieId, actif',
+            chapitres: '++id, code, libelle, mairieId, actif',
+            sousChapitres: '++id, code, libelle, mairieId, actif',
+            previsions: '++id, exercice, chapitreId, mairieId, statut, personnelId',
+            mandats:
+              '++id, numeroMandat, dateMandat, exercice, chapitreId, sousChapitreId, previsionId, bordereauMandatId, mairieId, statut, personnelId',
+            bordereauMandats: '++id, numero, exercice, mairieId, statut, personnelId',
+            printData: '++id, type, createdAt',
+          });
+          
+          if (!await db.isOpen()) {
+            await db.open();
+          }
+          
+          return db;
+        } catch (e) {
+          showError("Erreur d'initialisation de la base de données : " + e.message);
+          throw e;
+        }
+      }
+
+      // Charger les données depuis IndexedDB si declarationId est fourni
+      async function loadFromDatabase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const declarationId = parseInt(urlParams.get('declarationId'), 10);
+        const shouldPrint = urlParams.get('print') === 'true';
+
+        if (!declarationId) {
+          console.log('Pas de declarationId - en attente de message postMessage');
+          return;
+        }
+
+        try {
+          console.log('Chargement de la déclaration depuis IndexedDB:', declarationId);
+          await initDB();
+          const declaration = await db.declarations.get(declarationId);
+
+          if (!declaration) {
+            showError('Déclaration non trouvée : ' + declarationId);
+            return;
+          }
+
+          // Récupérer la mairie et la taxe
+          const mairie = await db.mairies.toCollection().first();
+          const taxe = declaration.taxeId ? await db.taxes.get(declaration.taxeId) : null;
+
+          // Formater la date
+          const dateEncaissement = declaration.dateEncaissement
+            ? new Date(declaration.dateEncaissement).toLocaleDateString('fr-FR')
+            : '';
+
+          // Préparer les données pour le remplissage
+          const data = {
+            mairie: mairie?.nom || 'Mairie de Bodokro',
+            codeCommune: mairie?.code || '360',
+            exercice: declaration.exercice,
+            article: taxe?.code || '',
+            numeroPiece: declaration.numeroPiece,
+            nomPartieVersante: declaration.nomPartieVersante || '',
+            adresse: declaration.adresse || '',
+            numeroLivre: declaration.numeroLivre || 'T31T',
+            numeroEncaissement: declaration.numeroEncaissement || '',
+            dateEncaissement: dateEncaissement,
+            natureRecette: taxe?.libelle || '',
+            montantRecette: declaration.montantRecette || declaration.montant || 0,
+            ville: mairie?.ville || 'Bodokro',
+          };
+
+          remplirFormulaire(data);
+
+          if (shouldPrint) {
+            setTimeout(() => window.print(), 500);
+          }
+        } catch (error) {
+          showError('Erreur lors du chargement : ' + error.message);
+        }
+      }
+
+      // Fonction d'impression manuelle
+      function imprimerPage() {
+        window.print();
+      }
+
+      // Au chargement de la page
       document.addEventListener('DOMContentLoaded', () => {
         console.log('Page de déclaration chargée');
-
-        // Tenter de récupérer les données depuis Dexie (IndexedDB)
-        if (typeof Dexie !== 'undefined') {
-          const db = new Dexie('TresorDatabase');
-          db.open()
-            .then(async () => {
-              try {
-                // Récupérer le dernier élément ajouté
-                const printDataCollection = await db
-                  .table('printData')
-                  .orderBy('id')
-                  .reverse()
-                  .limit(1)
-                  .toArray();
-
-                if (printDataCollection && printDataCollection.length > 0) {
-                  const printData = printDataCollection[0];
-
-                  // Vérifier si c'est pour nous (daté de moins de 1 minute)
-                  const now = new Date();
-                  const dataTime = new Date(printData.createdAt);
-                  const diffMs = now - dataTime;
-
-                  // On accepte si c'est le bon type et récent (< 60 secondes)
-                  // On vérifie aussi si les données correspondent à une déclaration (présence de montantRecette)
-                  if (
-                    (printData.type === 'FILL_AND_PRINT' ||
-                      printData.type === 'FILL_DECLARATION') &&
-                    diffMs < 60000
-                  ) {
-                    const messageData = printData.data; // { type: ..., data: ... }
-
-                    if (
-                      messageData &&
-                      messageData.data &&
-                      messageData.data.montantRecette !== undefined
-                    ) {
-                      console.log('Données trouvées dans IndexedDB:', printData);
-                      remplirFormulaire(messageData.data);
-
-                      // Supprimer l'enregistrement
-                      await db.table('printData').delete(printData.id);
-
-                      // Imprimer
-                      setTimeout(() => {
-                        window.print();
-                      }, 1000);
-                    }
-                  }
-                }
-              } catch (err) {
-                console.error('Erreur lors de la lecture de IndexedDB:', err);
-              }
-            })
-            .catch((err) => {
-              console.log(
-                "Impossible d'ouvrir la base de données (peut-être pas encore créée):",
-                err
-              );
-            });
-        }
+        loadFromDatabase();
       });
     </script>
-    <script src="dexie.min.js"></script>
   </body>
 </html>

@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Mandat de Paiement</title>
+    <script src="dexie.min.js"></script>
     <style>
       @import url('https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap');
 
@@ -27,6 +28,49 @@
           display: flex;
           justify-content: center;
           padding: 20px;
+      }
+
+      /* Bouton d'impression */
+      #error-display {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #ffebee;
+        color: #c62828;
+        padding: 20px;
+        border: 2px solid #ef5350;
+        border-radius: 8px;
+        z-index: 9999;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      .print-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+      }
+      .print-button:hover {
+        background-color: #1565c0;
+      }
+
+      @media print {
+        .print-button {
+          display: none !important;
+        }
       }
 
       .page {
@@ -237,6 +281,8 @@
     </style>
   </head>
   <body>
+    <div id="error-display"></div>
+    <button class="print-button" onclick="imprimerPage()">🖨️ Imprimer</button>
     <div class="page">
       <!-- HEADER -->
       <div class="header-grid">
@@ -412,6 +458,10 @@
 
       <div class="footer-note">Pour acquit de la somme indiquée ci-dessus (A) :</div>
     </div>
+
+    <!-- Bouton d'impression -->
+    <button class="print-button" onclick="imprimerPage()">🖨️ Imprimer</button>
+
     <script>
       // Fonction pour formater un nombre avec espaces
       function formatMontant(montant) {
@@ -454,43 +504,204 @@
         }
       });
 
-      // Dexie loading
-      document.addEventListener('DOMContentLoaded', () => {
-        if (typeof Dexie !== 'undefined') {
-          const db = new Dexie('TresorDatabase');
-          db.open().then(async () => {
-            try {
-              const printDataCollection = await db
-                .table('printData')
-                .orderBy('id')
-                .reverse()
-                .limit(1)
-                .toArray();
-              if (printDataCollection && printDataCollection.length > 0) {
-                const printData = printDataCollection[0];
-                const now = new Date();
-                const diffMs = now - new Date(printData.createdAt);
-
-                if (
-                  (printData.type === 'FILL_MANDAT' || printData.type === 'FILL_AND_PRINT') &&
-                  diffMs < 60000
-                ) {
-                  const messageData = printData.data; // { type: ..., data: ... }
-                  if (messageData && messageData.data) {
-                    console.log('Data found in IndexedDB', printData);
-                    remplirFormulaire(messageData.data);
-                    await db.table('printData').delete(printData.id);
-                    setTimeout(() => window.print(), 500);
-                  }
-                }
-              }
-            } catch (err) {
-              console.error('Error reading from IndexedDB', err);
-            }
-          });
+      // Configuration IndexedDB avec Dexie
+      function showError(msg) {
+        console.error(msg);
+        const el = document.getElementById('error-display');
+        if (el) {
+          el.style.display = 'block';
+          el.innerHTML += '<p>' + msg + '</p>';
         }
+      }
+
+      let db;
+      async function initDB() {
+        if (typeof Dexie === 'undefined') {
+          showError("Erreur critique : La librairie Dexie.js n'a pas pu être chargée.");
+          throw new Error('Dexie is undefined');
+        }
+
+        if (db) return db; // Déjà initialisé
+
+        try {
+          db = new Dexie('TresorDatabase');
+          db.version(13).stores({
+            mairies: '++id, nom, code, ville',
+            taxes: '++id, code, libelle, mairieId, type, actif',
+            declarations:
+              '++id, numeroPiece, dateEncaissement, mairieId, taxeId, statut, bordereauId, personnelId, exercice',
+            bordereauxRecette: '++id, numero, annee, mairieId, statut, personnelId',
+            utilisateurs: '++id, username, email, role, mairieId, actif',
+            approvisionnements: '++id, date, exercice, mairieId, type, personnelId',
+            remises: '++id, numeroRemise, date, exercice, mairieId, personnelId',
+            versements: '++id, numeroVersement, date, exercice, mairieId, personnelId',
+            balancesEntree:
+              '++id, date, exercice, mairieId, type, personnelId, [exercice+mairieId]',
+            quotites: '++id, code, prix, type, mairieId, actif',
+            chapitres: '++id, code, libelle, mairieId, actif',
+            sousChapitres: '++id, code, libelle, mairieId, actif',
+            previsions: '++id, exercice, chapitreId, mairieId, statut, personnelId',
+            mandats:
+              '++id, numeroMandat, dateMandat, exercice, chapitreId, sousChapitreId, previsionId, bordereauMandatId, mairieId, statut, personnelId',
+            bordereauMandats: '++id, numero, exercice, mairieId, statut, personnelId',
+            printData: '++id, type, createdAt',
+          });
+
+          if (!(await db.isOpen())) {
+            await db.open();
+          }
+
+          return db;
+        } catch (e) {
+          showError("Erreur d'initialisation de la base de données : " + e.message);
+          throw e;
+        }
+      }
+
+      // Fonction pour convertir un montant en lettres
+      function nombreEnLettres(nombre) {
+        const unites = [
+          '',
+          'un',
+          'deux',
+          'trois',
+          'quatre',
+          'cinq',
+          'six',
+          'sept',
+          'huit',
+          'neuf',
+          'dix',
+          'onze',
+          'douze',
+          'treize',
+          'quatorze',
+          'quinze',
+          'seize',
+          'dix-sept',
+          'dix-huit',
+          'dix-neuf',
+        ];
+        const dizaines = [
+          '',
+          '',
+          'vingt',
+          'trente',
+          'quarante',
+          'cinquante',
+          'soixante',
+          'soixante',
+          'quatre-vingt',
+          'quatre-vingt',
+        ];
+        if (nombre === 0) return 'zéro';
+        if (nombre < 20) return unites[nombre];
+        if (nombre < 100) {
+          const d = Math.floor(nombre / 10);
+          const u = nombre % 10;
+          if (d === 7 || d === 9) return dizaines[d] + '-' + unites[10 + u];
+          if (u === 1 && d !== 8) return dizaines[d] + ' et un';
+          if (u === 0 && d === 8) return 'quatre-vingts';
+          return dizaines[d] + (u ? '-' + unites[u] : '');
+        }
+        if (nombre < 1000) {
+          const c = Math.floor(nombre / 100);
+          const r = nombre % 100;
+          let result = c === 1 ? 'cent' : unites[c] + ' cent';
+          if (c > 1 && r === 0) result += 's';
+          if (r > 0) result += ' ' + nombreEnLettres(r);
+          return result;
+        }
+        if (nombre < 1000000) {
+          const m = Math.floor(nombre / 1000);
+          const r = nombre % 1000;
+          let result = m === 1 ? 'mille' : nombreEnLettres(m) + ' mille';
+          if (r > 0) result += ' ' + nombreEnLettres(r);
+          return result;
+        }
+        const millions = Math.floor(nombre / 1000000);
+        const reste = nombre % 1000000;
+        let result = nombreEnLettres(millions) + ' million';
+        if (millions > 1) result += 's';
+        if (reste > 0) result += ' ' + nombreEnLettres(reste);
+        return result;
+      }
+
+      // Charger les données depuis IndexedDB si mandatId est fourni
+      async function loadFromDatabase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const mandatId = parseInt(urlParams.get('mandatId'), 10);
+        const shouldPrint = urlParams.get('print') === 'true';
+
+        if (!mandatId) {
+          console.log('Pas de mandatId - en attente de message postMessage');
+          return;
+        }
+
+        try {
+          console.log('Chargement du mandat depuis IndexedDB:', mandatId);
+          await initDB();
+          const mandat = await db.mandats.get(mandatId);
+
+          if (!mandat) {
+            showError('Mandat non trouvé : ' + mandatId);
+            return;
+          }
+
+          // Récupérer la mairie, chapitre, sous-chapitre
+          const mairie = await db.mairies.toCollection().first();
+          const chapitre = mandat.chapitreId ? await db.chapitres.get(mandat.chapitreId) : null;
+          const sousChapitre = mandat.sousChapitreId
+            ? await db.sousChapitres.get(mandat.sousChapitreId)
+            : null;
+          const bordereau = mandat.bordereauMandatId
+            ? await db.bordereauMandats.get(mandat.bordereauMandatId)
+            : null;
+
+          // Préparer les données pour le remplissage
+          const data = {
+            exercice: mandat.exercice,
+            imputationFonctionnelle: sousChapitre
+              ? `${sousChapitre.code}/${chapitre?.code}`
+              : chapitre?.code || '',
+            imputationPatrimoniale: mandat.patrimonial || '',
+            numeroOrdre: mandat.numeroMandat || '',
+            numeroBordereau: bordereau ? `${bordereau.numero}-${bordereau.exercice % 100}` : '',
+            objetDepense: mandat.objet || '',
+            periode: '',
+            beneficiaire: mandat.beneficiaire || '',
+            beneficiaireDetails: '',
+            rib: mandat.rib || '',
+            montantBrut: mandat.montant || 0,
+            montantNet: mandat.montant || 0,
+            montantLettres: nombreEnLettres(mandat.montant || 0).toUpperCase(),
+            dateEmission: new Date(mandat.dateMandat).toLocaleDateString('fr-FR'),
+            mairieDepartement: mairie?.ville || '',
+            mairieCommune: mairie?.ville || '',
+            mairieCode: mairie?.code || '',
+            mairieVille: mairie?.nom || '',
+          };
+
+          remplirFormulaire(data);
+
+          if (shouldPrint) {
+            setTimeout(() => window.print(), 500);
+          }
+        } catch (error) {
+          showError('Erreur lors du chargement : ' + error.message);
+        }
+      }
+
+      // Fonction d'impression manuelle
+      function imprimerPage() {
+        window.print();
+      }
+
+      // Au chargement
+      document.addEventListener('DOMContentLoaded', () => {
+        console.log('Page de mandat chargée');
+        loadFromDatabase();
       });
     </script>
-    <script src="dexie.min.js"></script>
   </body>
 </html>

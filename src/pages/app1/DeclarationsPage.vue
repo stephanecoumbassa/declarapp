@@ -95,7 +95,6 @@ import {
   type Taxe,
   type BordereauRecette,
 } from 'src/database/db';
-import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import { useAuthStore } from 'src/stores/auth-store';
 import FilterBar from 'src/components/FilterBar.vue';
 import DataTable from 'src/components/DataTable.vue';
@@ -392,61 +391,16 @@ function confirmDelete(declaration: Declaration) {
   });
 }
 
-async function printDeclaration(declaration: Declaration) {
-  const mairie = mairies.value.find((m) => m.id === declaration.mairieId);
-  const taxe = taxes.value.find((t) => t.id === declaration.taxeId);
-
-  // Ouvrir le nouveau template HTML
-  await openPrintWindowWithMessage(
-    '/declaration_recette_new.html?declarationId=' + declaration.id,
-    {
-      type: 'FILL_DECLARATION',
-      data: {
-        mairie: mairie?.nom || '',
-        codeCommune: mairie?.code || 360,
-        exercice: declaration.exercice,
-        article: taxe?.code || '',
-        numeroPiece: declaration.numeroPiece,
-        nomPartieVersante: declaration.nomPartieVersante,
-        adresse: declaration.adresse,
-        numeroLivre: declaration.numeroLivre || 'T31T',
-        numeroEncaissement: declaration.numeroEncaissement,
-        dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
-        natureRecette: taxe?.libelle || '',
-        montantRecette: declaration.montantRecette,
-        ville: mairie?.ville || 'Bodokro',
-        observations: declaration.observations || '',
-      },
-    },
-  );
+function printDeclaration(declaration: Declaration) {
+  // Ouvrir directement avec l'ID - les données sont lues depuis IndexedDB
+  window.open('declaration_recette_new.html?declarationId=' + declaration.id, '_blank');
 }
 
-async function downloadDeclarationPDF(declaration: Declaration) {
-  const mairie = mairies.value.find((m) => m.id === declaration.mairieId);
-  const taxe = taxes.value.find((t) => t.id === declaration.taxeId);
-
-  // Utiliser l'utilitaire d'impression compatible Electron
-  await openPrintWindowWithMessage(
-    '/declaration_recette_new.html?declarationId=' + declaration.id,
-    {
-      type: 'FILL_AND_PRINT',
-      data: {
-        mairie: mairie?.nom || '',
-        codeCommune: mairie?.code || 360,
-        exercice: declaration.exercice,
-        article: taxe?.code || '',
-        numeroPiece: declaration.numeroPiece,
-        nomPartieVersante: declaration.nomPartieVersante,
-        adresse: declaration.adresse,
-        numeroLivre: declaration.numeroLivre || 'T31T',
-        numeroEncaissement: declaration.numeroEncaissement,
-        dateEncaissement: date.formatDate(declaration.dateEncaissement, 'DD/MM/YYYY'),
-        natureRecette: taxe?.libelle || '',
-        montantRecette: declaration.montantRecette,
-        ville: mairie?.ville || 'Bodokro',
-        observations: declaration.observations || '',
-      },
-    },
+function downloadDeclarationPDF(declaration: Declaration) {
+  // Ouvrir directement avec l'ID et print=true - les données sont lues depuis IndexedDB
+  window.open(
+    'declaration_recette_new.html?declarationId=' + declaration.id + '&print=true',
+    '_blank',
   );
 }
 

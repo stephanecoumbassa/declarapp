@@ -1,4 +1,4 @@
-import { db, DEFAULT_MAIRIE_ID, type Quotite } from './db';
+﻿import { db, DEFAULT_MAIRIE_ID, type Quotite } from './db';
 import type {
   Declaration,
   BordereauRecette,
@@ -13,20 +13,20 @@ import type {
 } from './db';
 
 // =================================================================
-//                      SEEDERS DE DONNÉES PAR DÉFAUT
+//                      SEEDERS DE DONNÃ‰ES PAR DÃ‰FAUT
 // =================================================================
 
 /**
- * Remplit la base de données avec les données initiales et essentielles.
- * C'est l'équivalent de la fonction `initializeDatabase` mais externalisée.
+ * Remplit la base de donnÃ©es avec les donnÃ©es initiales et essentielles.
+ * C'est l'Ã©quivalent de la fonction `initializeDatabase` mais externalisÃ©e.
  */
 export async function seedDefaultData() {
-  console.log('🌱 Seeding default data...');
+  console.log('ðŸŒ± Seeding default data...');
   await clearDatabase();
 
   const now = new Date();
 
-  // 1. Mairie par défaut
+  // 1. Mairie par dÃ©faut
   const mairieId = await db.mairies.add({
     nom: 'Mairie de Bodokro',
     code: '360',
@@ -39,12 +39,12 @@ export async function seedDefaultData() {
     updatedAt: now,
   });
 
-  // 2. Utilisateur admin par défaut
+  // 2. Utilisateur admin par dÃ©faut
   await db.utilisateurs.add({
     username: 'admin',
-    password: 'admin123', // Doit être hashé en production
+    password: 'admin123', // Doit Ãªtre hashÃ© en production
     nom: 'Administrateur',
-    prenom: 'Système',
+    prenom: 'SystÃ¨me',
     email: 'admin@tresor.sn',
     role: 'admin',
     actif: true,
@@ -52,13 +52,12 @@ export async function seedDefaultData() {
     updatedAt: now,
   });
 
-  // 3. Taxes par défaut
+  // 3. Taxes par dÃ©faut - Nomenclature complÃ¨te
   await db.taxes.bulkAdd([
+    // ========== SECTION 70 - RECETTES FISCALES ==========
     {
-      code: 'TXF001',
-      libelle: 'Taxe foncière',
-      description: 'Taxe sur les propriétés bâties',
-      taux: 5,
+      code: '70',
+      libelle: 'SECTION 70 - RECETTES FISCALES',
       type: 'variable',
       mairieId: mairieId as number,
       actif: true,
@@ -66,10 +65,8 @@ export async function seedDefaultData() {
       updatedAt: now,
     },
     {
-      code: 'TXH001',
-      libelle: "Taxe d'habitation",
-      description: "Taxe sur l'occupation des logements",
-      taux: 3,
+      code: '700',
+      libelle: 'CHAP.700 - IMPOTS ATTRIBUES AUX COMMUNES',
       type: 'variable',
       mairieId: mairieId as number,
       actif: true,
@@ -77,11 +74,649 @@ export async function seedDefaultData() {
       updatedAt: now,
     },
     {
-      code: 'TXE001',
-      libelle: "Taxe d'enlèvement des ordures",
-      description: 'Taxe pour le service de collecte des ordures',
-      montant: 15000,
+      code: '7000',
+      libelle: 'Contribution fonciÃ¨re des propriÃ©tÃ©s bÃ¢ties',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7001',
+      libelle: 'Contribution fonciÃ¨re des propriÃ©tÃ©s non bÃ¢ties',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7004',
+      libelle: 'Contribution des patentes',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7005',
+      libelle: 'Contribution des licences',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '702',
+      libelle: 'CHAP.702 - TAXES COMMUNALES PAR VOIE DE ROLE',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '70261',
+      libelle: 'ImpÃ´t synthÃ©tique',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '70262',
+      libelle: 'Taxes forfaitaires petits commerÃ§ants/artisans',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7027',
+      libelle: 'Taxe sur les locaux louÃ©s en garnis',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '703',
+      libelle: 'CHAP.703 - TAXES SUR TITRE DE RECETTES PROPRES',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7030',
+      libelle: 'Taxes sur les pompes distributrices de carburant',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7031',
+      libelle: 'Taxes sur les charrettes',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7036',
+      libelle: 'Taxes sur les spectacles et galas',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7038',
+      libelle: 'Taxes sur les Ã©tablissements de nuit',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '704',
+      libelle: 'CHAP.704 - TAXES SUR TITRE DE RECETTES PAR LES COMMUNES',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7041',
+      libelle: 'Taxes sur les taxis',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7042',
+      libelle: 'Taxes sur la publicitÃ©',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 71 - RECETTES DES PRESTATIONS ET SERVICES ==========
+    {
+      code: '71',
+      libelle: 'SECTION 71 - RECETTES DES PRESTATIONS ET SERVICES',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '710',
+      libelle: 'CHAP.710 - RECETTES DES SERVICES GENERAUX',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7100',
+      libelle: 'Administration gÃ©nÃ©rale',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71000',
+      libelle: 'LÃ©galisation de signatures et certifications',
       type: 'fixe',
+      montant: 500,
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71001',
+      libelle: 'DÃ©livrance livrets de famille et documents',
+      type: 'fixe',
+      montant: 1000,
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71006',
+      libelle: 'Autres recettes administration gÃ©nÃ©rale',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7101',
+      libelle: 'Administration financiÃ¨re et domaniale',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71010',
+      libelle: "Taxe sur dÃ©livrance permis d'habiter",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71016',
+      libelle: 'Autres recettes admin. financiÃ¨re/domaniale',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71030',
+      libelle: 'Taxe de sÃ©questre',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71031',
+      libelle: 'Produits de ventes de la fourriÃ¨re',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '711',
+      libelle: 'CHAP.711 - RECETTES DES SERVICES DE COLLECTIVITE',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7112',
+      libelle: 'Urbanisme et environnement',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71120',
+      libelle: 'Taxes ou redevance de bornage',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71126',
+      libelle: 'Autres recettes urbanisme/environnement',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7113',
+      libelle: "HygiÃ¨ne, salubritÃ©, hydraulique, adduction d'eau",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7130',
+      libelle: "Taxe d'enlÃ¨vement des ordures mÃ©nagÃ¨res",
+      type: 'fixe',
+      montant: 15000,
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71150',
+      libelle: 'CimetiÃ¨res - services funÃ©raires',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71152',
+      libelle: 'Morgue - DÃ©pÃ´ts de cercueils',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71154',
+      libelle: 'Autres recettes services funÃ©raires',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '712',
+      libelle: 'CHAP.712 - RECETTES SERVICES SOCIAUX/CULTURELS',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7125',
+      libelle: 'ActivitÃ©s culturelles - Taxes, Redevances',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71250',
+      libelle: 'Administration activitÃ©s culturelles',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71256',
+      libelle: 'Autres recettes services sociaux/culturels',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '713',
+      libelle: 'CHAP.713 - RECETTES DES SERVICES ECONOMIQUES',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7133',
+      libelle: 'Transports - communications',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71330',
+      libelle: 'Administration transports et communications',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71331',
+      libelle: 'Gare routiÃ¨re - stations de taxis',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7134',
+      libelle: 'Industrie et commerce',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71341',
+      libelle: 'Abattoirs, conservation et transport de viande',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71344',
+      libelle: 'MarchÃ©s',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '71345',
+      libelle: 'Foires et expositions',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 72 - REVENU DU PATRIMOINE ==========
+    {
+      code: '72',
+      libelle: 'SECTION 72 - REVENU DU PATRIMOINE',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '720',
+      libelle: 'CHAP.720 - REVENU DU PATRIMOINE IMMOBILIER',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7200',
+      libelle: 'Location terrains et immeubles domaine privÃ©',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '72000',
+      libelle: 'Baux Ã  loyer',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7203',
+      libelle: 'Revenus occupations temporaires domaine public',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '72031',
+      libelle: 'Concessions sur accord conventionnel',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '72032',
+      libelle: 'Droit de dÃ©pÃ´ts temporaires',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 73 - AIDE DE L'ETAT ==========
+    {
+      code: '73',
+      libelle: "SECTION 73 - AIDE DE L'ETAT - FONDS DE CONCOURS",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '730',
+      libelle: 'CHAP.730 - DOTATION GLOBALE DE FONCTIONNEMENT',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7300',
+      libelle: 'Partie minimale',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7301',
+      libelle: 'Partie complÃ©mentaire, versement gÃ©nÃ©ral',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7302',
+      libelle: 'Partie complÃ©mentaire, versement spÃ©cial',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 74 - RECETTES DIVERSES ==========
+    {
+      code: '74',
+      libelle: 'SECTION 74 - RECETTES DIVERSES AU TITRE I',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '742',
+      libelle: 'CHAP.742 - PRELEVEMENT SUR FONDS DE RESERVE',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '743',
+      libelle: 'CHAP.743 - RECETTES ACCIDENTELLES',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7406',
+      libelle: 'Autres versements (Vignettes auto)',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '7436',
+      libelle: 'Recettes accidentelles',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 02 - INVESTISSEMENT ==========
+    {
+      code: '02',
+      libelle: "SECTION 02 - PRELEVEMENT SUR FONDS D'INVESTISSEMENT",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 04 - AIDE DE L'ETAT TITRE II ==========
+    {
+      code: '04',
+      libelle: "SECTION 04 - AIDE DE L'ETAT - FONDS DE CONCOURS",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '040',
+      libelle: "CHAP.040 - AIDE ET CONCOURS DE L'ETAT",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '0401',
+      libelle: "Subvention d'Ã©quipement de l'Etat",
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    // ========== SECTION 06 - RECETTES DIVERSES TITRE II ==========
+    {
+      code: '06',
+      libelle: 'SECTION 06 - RECETTES DIVERSES AU TITRE II',
+      type: 'variable',
+      mairieId: mairieId as number,
+      actif: true,
+      createdAt: now,
+      updatedAt: now,
+    },
+    {
+      code: '066',
+      libelle: 'CHAP.066 - AUTRES RECETTES DIVERSES AU TITRE II',
+      type: 'variable',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -89,7 +724,7 @@ export async function seedDefaultData() {
     },
   ]);
 
-  // 4. Chapitres par défaut (App3)
+  // 4. Chapitres par dÃ©faut (App3)
   await db.chapitres.bulkAdd([
     {
       code: '1',
@@ -157,7 +792,7 @@ export async function seedDefaultData() {
     },
   ]);
 
-  // 5. Sous-chapitres par défaut (App3)
+  // 5. Sous-chapitres par dÃ©faut (App3)
   await db.sousChapitres.bulkAdd([
     {
       code: '6000',
@@ -177,7 +812,7 @@ export async function seedDefaultData() {
     },
     {
       code: '60011',
-      libelle: 'FONCTIONNEMENT DE LA MUNICIPALITÉ',
+      libelle: 'FONCTIONNEMENT DE LA MUNICIPALITÃ‰',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -193,7 +828,7 @@ export async function seedDefaultData() {
     },
     {
       code: '60013',
-      libelle: 'INDEMNITÉS DE FONCTION ET DE REPRÉSENTATION',
+      libelle: 'INDEMNITÃ‰S DE FONCTION ET DE REPRÃ‰SENTATION',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -209,7 +844,7 @@ export async function seedDefaultData() {
     },
     {
       code: '60016',
-      libelle: 'AUTRES DÉPENSES AU TITRE DES AUTORITÉS MUNICIPALES',
+      libelle: 'AUTRES DÃ‰PENSES AU TITRE DES AUTORITÃ‰S MUNICIPALES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -225,7 +860,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6006',
-      libelle: "AUTRES DÉPENSES D'ADMINISTRATION GÉNÉRALE",
+      libelle: "AUTRES DÃ‰PENSES D'ADMINISTRATION GÃ‰NÃ‰RALE",
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -241,7 +876,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6016',
-      libelle: 'AUTRES DÉPENSES RELATIVES AU DOMAINE COMMUNAL',
+      libelle: 'AUTRES DÃ‰PENSES RELATIVES AU DOMAINE COMMUNAL',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -289,7 +924,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6131',
-      libelle: "OPÉRATIONS D'ASSAINISSEMENT",
+      libelle: "OPÃ‰RATIONS D'ASSAINISSEMENT",
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -297,7 +932,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6133',
-      libelle: 'NETTOIEMENT DE LA VOIRIE- ENLÈVEMENT DES ORDURES',
+      libelle: 'NETTOIEMENT DE LA VOIRIE- ENLÃˆVEMENT DES ORDURES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -305,7 +940,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6136',
-      libelle: "AUTRES DÉPENSES D'HYGIÈNES ET SALUBRITÉ PUBLIQUE-HYDRAULIQUE",
+      libelle: "AUTRES DÃ‰PENSES D'HYGIÃˆNES ET SALUBRITÃ‰ PUBLIQUE-HYDRAULIQUE",
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -321,7 +956,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6151',
-      libelle: 'CIMETIÈRES-INHUMATION-EXHUMATIONS-CREUSEMENTS DE FOSSES',
+      libelle: 'CIMETIÃˆRES-INHUMATION-EXHUMATIONS-CREUSEMENTS DE FOSSES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -329,7 +964,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6206',
-      libelle: "AUTRES DÉPENSES D'ÉDUCATION",
+      libelle: "AUTRES DÃ‰PENSES D'Ã‰DUCATION",
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -345,7 +980,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6216',
-      libelle: 'AUTRES DÉPENSES DE SANTÉ PUBLIQUE',
+      libelle: 'AUTRES DÃ‰PENSES DE SANTÃ‰ PUBLIQUE',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -353,7 +988,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6223',
-      libelle: 'HANDICAPÉS',
+      libelle: 'HANDICAPÃ‰S',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -361,7 +996,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6224',
-      libelle: 'AIDE FAMILIALE ,SOCIALE ET PERSONNES AGÉES',
+      libelle: 'AIDE FAMILIALE ,SOCIALE ET PERSONNES AGÃ‰ES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -377,7 +1012,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6246',
-      libelle: 'AUTRES DÉPENSES AU TITRE DES SPORTS ET LOISIRS',
+      libelle: 'AUTRES DÃ‰PENSES AU TITRE DES SPORTS ET LOISIRS',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -393,7 +1028,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6256',
-      libelle: 'AUTRES DÉPENSES AU TITRE DES ACTIVITÉS CULTURELLES',
+      libelle: 'AUTRES DÃ‰PENSES AU TITRE DES ACTIVITÃ‰S CULTURELLES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -409,7 +1044,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6336',
-      libelle: 'AUTRES DÉPENSES DE TRANSPORT ET COMMUNICATIONS',
+      libelle: 'AUTRES DÃ‰PENSES DE TRANSPORT ET COMMUNICATIONS',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -425,7 +1060,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6344',
-      libelle: 'MARCHÉS',
+      libelle: 'MARCHÃ‰S',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -441,7 +1076,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6415',
-      libelle: 'CONFÉRENCES INTERCOMMUNALES -ASSOCIATION DES VILLES ET COMMUNES',
+      libelle: 'CONFÃ‰RENCES INTERCOMMUNALES -ASSOCIATION DES VILLES ET COMMUNES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -457,7 +1092,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6420',
-      libelle: 'RESPONSABILITÉ CIVILE',
+      libelle: 'RESPONSABILITÃ‰ CIVILE',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -465,7 +1100,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6422',
-      libelle: 'ASSURANCES DES VÉHICULES',
+      libelle: 'ASSURANCES DES VÃ‰HICULES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -481,7 +1116,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6430',
-      libelle: 'CÉRÉMONIES PUBLIQUES',
+      libelle: 'CÃ‰RÃ‰MONIES PUBLIQUES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -489,7 +1124,7 @@ export async function seedDefaultData() {
     },
     {
       code: '6431',
-      libelle: 'FÊTES ET RÉCEPTIONS OFFICIELLES',
+      libelle: 'FÃŠTES ET RÃ‰CEPTIONS OFFICIELLES',
       mairieId: mairieId as number,
       actif: true,
       createdAt: now,
@@ -513,16 +1148,16 @@ export async function seedDefaultData() {
     },
   ]);
 
-  console.log('✅ Default data seeded successfully.');
+  console.log('âœ… Default data seeded successfully.');
 }
 
 // =================================================================
-//                      SEEDERS DE DONNÉES DE TEST
+//                      SEEDERS DE DONNÃ‰ES DE TEST
 // =================================================================
 
-// ... (Le reste du fichier contient les fonctions pour générer des données aléatoires)
-// Pour la concision, je vais réutiliser les fonctions existantes de l'ancien `seeders.ts`
-// mais je les préfixerai avec "generate" pour clarifier leur rôle.
+// ... (Le reste du fichier contient les fonctions pour gÃ©nÃ©rer des donnÃ©es alÃ©atoires)
+// Pour la concision, je vais rÃ©utiliser les fonctions existantes de l'ancien `seeders.ts`
+// mais je les prÃ©fixerai avec "generate" pour clarifier leur rÃ´le.
 
 function randomDate(start: Date, end: Date): Date {
   return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
@@ -536,8 +1171,8 @@ function randomChoice<T>(array: T[]): T {
 }
 
 /**
- * Construire un objet detailsQuotites à partir d'un objet timbres.
- * Répartit les quantités par valeur entre les quotités actives de même prix.
+ * Construire un objet detailsQuotites Ã  partir d'un objet timbres.
+ * RÃ©partit les quantitÃ©s par valeur entre les quotitÃ©s actives de mÃªme prix.
  */
 async function buildDetailsQuotitesFromTimbres(timbres: Record<number, number>) {
   const result: Record<string, number> = {};
@@ -568,10 +1203,10 @@ async function buildDetailsQuotitesFromTimbres(timbres: Record<number, number>) 
   return result;
 }
 
-// ... etc. pour toutes les autres fonctions de génération
+// ... etc. pour toutes les autres fonctions de gÃ©nÃ©ration
 
 /**
- * Options pour le seeder de données de test.
+ * Options pour le seeder de donnÃ©es de test.
  */
 export interface SeedOptions {
   utilisateurs?: number;
@@ -591,10 +1226,10 @@ export interface SeedOptions {
 }
 
 /**
- * Remplit la base de données avec une grande quantité de données de test aléatoires.
+ * Remplit la base de donnÃ©es avec une grande quantitÃ© de donnÃ©es de test alÃ©atoires.
  */
 export async function seedTestData(options: SeedOptions = {}) {
-  console.log('🚀 Starting test data seeders...');
+  console.log('ðŸš€ Starting test data seeders...');
 
   const {
     declarations = 100,
@@ -610,11 +1245,11 @@ export async function seedTestData(options: SeedOptions = {}) {
   } = options;
 
   try {
-    // Il est recommandé de partir d'une base propre (ou de données par défaut)
+    // Il est recommandÃ© de partir d'une base propre (ou de donnÃ©es par dÃ©faut)
     await seedDefaultData();
     console.log('Default data seeded before adding test data.');
 
-    // On récupère les IDs nécessaires après le seeding par défaut
+    // On rÃ©cupÃ¨re les IDs nÃ©cessaires aprÃ¨s le seeding par dÃ©faut
     const utilisateursCreated = await db.utilisateurs.toArray();
     const utilisateurIds = utilisateursCreated.map((u) => u.id!);
     const taxesCreated = await db.taxes.toArray();
@@ -624,27 +1259,27 @@ export async function seedTestData(options: SeedOptions = {}) {
     const sousChapitresCreated = await db.sousChapitres.toArray();
     const sousChapitreIds = sousChapitresCreated.map((s) => s.id!);
 
-    // Génération des données de test supplémentaires
+    // GÃ©nÃ©ration des donnÃ©es de test supplÃ©mentaires
     // Note: les fonctions ci-dessous sont les anciennes fonctions de seeders.ts
-    // qui génèrent des données aléatoires.
-    // Pour l'instant, on simule leur exécution.
-    console.log(`🌱 Seeding ${bordereaux} test bordereaux...`);
+    // qui gÃ©nÃ¨rent des donnÃ©es alÃ©atoires.
+    // Pour l'instant, on simule leur exÃ©cution.
+    console.log(`ðŸŒ± Seeding ${bordereaux} test bordereaux...`);
     const bordereauxCreated = await seedBordereaux(utilisateurIds, bordereaux);
-    console.log(`🌱 Seeding ${declarations} test declarations...`);
+    console.log(`ðŸŒ± Seeding ${declarations} test declarations...`);
     await seedDeclarations(taxeIds, utilisateurIds, bordereauxCreated, declarations);
     // IMPORTANT: Seeding quotites AVANT approvisionnements/remises/versements/balances
-    // car buildDetailsQuotitesFromTimbres a besoin des quotités existantes
-    console.log(`🌱 Seeding ${quotites} test quotites...`);
+    // car buildDetailsQuotitesFromTimbres a besoin des quotitÃ©s existantes
+    console.log(`ðŸŒ± Seeding ${quotites} test quotites...`);
     await seedQuotites(quotites);
-    console.log(`🌱 Seeding ${approvisionnements} test approvisionnements...`);
+    console.log(`ðŸŒ± Seeding ${approvisionnements} test approvisionnements...`);
     await seedApprovisionnements(utilisateurIds, approvisionnements);
-    console.log(`🌱 Seeding ${remises} test remises...`);
+    console.log(`ðŸŒ± Seeding ${remises} test remises...`);
     await seedRemises(utilisateurIds, remises);
-    console.log(`🌱 Seeding ${versements} test versements...`);
+    console.log(`ðŸŒ± Seeding ${versements} test versements...`);
     await seedVersements(utilisateurIds, versements);
-    console.log(`🌱 Seeding ${balancesEntree} test balances...`);
+    console.log(`ðŸŒ± Seeding ${balancesEntree} test balances...`);
     await seedBalancesEntree(utilisateurIds, balancesEntree);
-    console.log(`🌱 Seeding ${previsions} test previsions...`);
+    console.log(`ðŸŒ± Seeding ${previsions} test previsions...`);
     const previsionsCreated = await seedPrevisions(
       chapitreIds,
       utilisateurIds,
@@ -652,11 +1287,11 @@ export async function seedTestData(options: SeedOptions = {}) {
       sousChapitreIds,
     );
     const previsionIds = previsionsCreated.map((p) => p.id!);
-    // D'abord créer les bordereaux de mandats
-    console.log(`🌱 Seeding ${bordereauMandats} test bordereau mandats...`);
+    // D'abord crÃ©er les bordereaux de mandats
+    console.log(`ðŸŒ± Seeding ${bordereauMandats} test bordereau mandats...`);
     const bordereauMandatsCreated = await seedBordereauMandats(utilisateurIds, bordereauMandats);
-    // Puis créer les mandats en les liant aux bordereaux
-    console.log(`🌱 Seeding ${mandats} test mandats...`);
+    // Puis crÃ©er les mandats en les liant aux bordereaux
+    console.log(`ðŸŒ± Seeding ${mandats} test mandats...`);
     await seedMandats(
       chapitreIds,
       sousChapitreIds,
@@ -666,9 +1301,9 @@ export async function seedTestData(options: SeedOptions = {}) {
       mandats,
     );
 
-    console.log('\n✨ All test data seeders have been executed successfully!');
+    console.log('\nâœ¨ All test data seeders have been executed successfully!');
   } catch (error) {
-    console.error('❌ Error during test data seeding:', error);
+    console.error('âŒ Error during test data seeding:', error);
     throw error;
   }
 }
@@ -678,10 +1313,10 @@ export async function seedTestData(options: SeedOptions = {}) {
 // =================================================================
 
 /**
- * Supprime toutes les données de toutes les tables.
+ * Supprime toutes les donnÃ©es de toutes les tables.
  */
 export async function clearDatabase() {
-  console.log('🗑️ Clearing all database tables...');
+  console.log('ðŸ—‘ï¸ Clearing all database tables...');
   await Promise.all([
     db.mairies.clear(),
     db.taxes.clear(),
@@ -699,36 +1334,36 @@ export async function clearDatabase() {
     db.mandats.clear(),
     db.bordereauMandats.clear(),
   ]);
-  console.log('✅ All tables cleared.');
+  console.log('âœ… All tables cleared.');
 }
 
-// On garde les fonctions de génération de l'ancien seeder.ts ici
+// On garde les fonctions de gÃ©nÃ©ration de l'ancien seeder.ts ici
 // pour que seedTestData puisse les utiliser.
 
 export async function seedBordereaux(personnelIds: number[], count: number = 80) {
-  console.log(`🌱 Seeding ${count} bordereaux de recette...`);
+  console.log(`ðŸŒ± Seeding ${count} bordereaux de recette...`);
 
   const bordereaux: Partial<BordereauRecette>[] = [];
   const now = new Date();
 
-  // Créer des bordereaux répartis sur les exercices avec des dates cohérentes
-  const exercices = [2023, 2024, 2025];
+  // CrÃ©er des bordereaux rÃ©partis sur les exercices avec des dates cohÃ©rentes
+  const exercices = [2024, 2025, 2026];
   let numeroGlobal = 1;
 
   for (let i = 0; i < count; i++) {
     const annee = exercices[i % exercices.length]!;
-    // Date de création répartie sur l'année
+    // Date de crÃ©ation rÃ©partie sur l'annÃ©e
     const mois = Math.floor((i / count) * 12);
     const dateCreation = new Date(annee, mois, randomAmount(1, 28));
 
-    // Si c'est 2025 et la date dépasse maintenant, ajuster
-    if (annee === 2025 && dateCreation > now) {
+    // Si c'est 2025 et la date dÃ©passe maintenant, ajuster
+    if (annee === 2026 && dateCreation > now) {
       dateCreation.setTime(now.getTime() - randomAmount(1, 30) * 24 * 60 * 60 * 1000);
     }
 
     const statuts: Array<'ouvert' | 'ferme'> = ['ouvert', 'ferme'];
-    // Les exercices passés sont fermés, l'année en cours peut être ouvert
-    const statut = annee < 2025 ? 'ferme' : randomChoice(statuts);
+    // Les exercices passÃ©s sont fermÃ©s, l'annÃ©e en cours peut Ãªtre ouvert
+    const statut = annee < 2026 ? 'ferme' : randomChoice(statuts);
 
     const obs = Math.random() > 0.6 ? 'Bordereau conforme' : undefined;
 
@@ -738,8 +1373,8 @@ export async function seedBordereaux(personnelIds: number[], count: number = 80)
       numero: numeroGlobal++,
       annee,
       mois: mois + 1, // Mois du bordereau (1-12)
-      montantTotal: 0, // Sera calculé après insertion des déclarations
-      nombreDeclarations: 0, // Sera calculé après insertion des déclarations
+      montantTotal: 0, // Sera calculÃ© aprÃ¨s insertion des dÃ©clarations
+      nombreDeclarations: 0, // Sera calculÃ© aprÃ¨s insertion des dÃ©clarations
       statut,
       createdAt: dateCreation,
       updatedAt: now,
@@ -752,7 +1387,7 @@ export async function seedBordereaux(personnelIds: number[], count: number = 80)
     bordereaux.push(bordereau);
   }
 
-  // Insérer les bordereaux et récupérer les IDs
+  // InsÃ©rer les bordereaux et rÃ©cupÃ©rer les IDs
   const insertedIds = await db.bordereauxRecette.bulkAdd(bordereaux as BordereauRecette[], {
     allKeys: true,
   });
@@ -763,7 +1398,7 @@ export async function seedBordereaux(personnelIds: number[], count: number = 80)
     id: insertedIds[index],
   })) as BordereauRecette[];
 
-  console.log(`✅ ${count} bordereaux de recette créés`);
+  console.log(`âœ… ${count} bordereaux de recette crÃ©Ã©s`);
   return result;
 }
 
@@ -773,7 +1408,7 @@ export async function seedDeclarations(
   bordereaux: BordereauRecette[],
   count: number = 100,
 ) {
-  console.log(`🌱 Seeding ${count} déclarations...`);
+  console.log(`ðŸŒ± Seeding ${count} dÃ©clarations...`);
 
   const declarations: Partial<Declaration>[] = [];
   const now = new Date();
@@ -781,7 +1416,7 @@ export async function seedDeclarations(
   // Map to track bordereau updates
   const bordereauUpdates = new Map<number, { count: number; total: number }>();
 
-  // Trier les bordereaux par date pour une meilleure répartition
+  // Trier les bordereaux par date pour une meilleure rÃ©partition
   const sortedBordereaux = [...bordereaux].sort((a, b) => {
     const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
     const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
@@ -793,12 +1428,12 @@ export async function seedDeclarations(
     const montantTaxe = Math.round((montantHT * randomAmount(5, 20)) / 100);
     const montantTTC = montantHT + montantTaxe;
 
-    // Choisir un bordereau aléatoirement
+    // Choisir un bordereau alÃ©atoirement
     const bordereau = randomChoice(sortedBordereaux);
     const exercice = bordereau.annee;
     const bordereauId = bordereau.id;
 
-    // La date d'encaissement doit être cohérente avec le mois du bordereau
+    // La date d'encaissement doit Ãªtre cohÃ©rente avec le mois du bordereau
     const bordereauMois = bordereau.mois || 1;
     const startOfMonth = new Date(exercice, bordereauMois - 1, 1);
     const endOfMonth = new Date(exercice, bordereauMois, 0); // Dernier jour du mois
@@ -806,13 +1441,13 @@ export async function seedDeclarations(
     // Date d'encaissement dans le mois du bordereau
     let dateEncaissement = randomDate(startOfMonth, endOfMonth);
 
-    // Si c'est 2025 et la date dépasse maintenant, ajuster
-    if (exercice === 2025 && dateEncaissement > now) {
+    // Si c'est 2025 et la date dÃ©passe maintenant, ajuster
+    if (exercice === 2026 && dateEncaissement > now) {
       dateEncaissement = new Date(now.getTime() - randomAmount(1, 30) * 24 * 60 * 60 * 1000);
     }
 
     const personnelId = randomChoice(personnelIds);
-    const obs = Math.random() > 0.7 ? 'Observations diverses sur la déclaration' : undefined;
+    const obs = Math.random() > 0.7 ? 'Observations diverses sur la dÃ©claration' : undefined;
 
     const declaration: Partial<Declaration> = {
       personnelId,
@@ -821,7 +1456,7 @@ export async function seedDeclarations(
       exercice,
       numeroPiece: String(i + 1),
       nomPartieVersante: `Contribuable ${String(i + 1).padStart(4, '0')}`,
-      adresse: `${randomChoice(['Rue', 'Avenue', 'Boulevard'])} ${Math.floor(Math.random() * 100)} ${randomChoice(['Dakar', 'Thiès', 'Saint-Louis'])}`,
+      adresse: `${randomChoice(['Rue', 'Avenue', 'Boulevard'])} ${Math.floor(Math.random() * 100)} ${randomChoice(['Dakar', 'ThiÃ¨s', 'Saint-Louis'])}`,
       dateEncaissement,
       numeroLivre: 'T31T',
       numeroEncaissement: `ENC-${String(i + 1).padStart(6, '0')}`,
@@ -831,11 +1466,11 @@ export async function seedDeclarations(
       updatedAt: now,
     };
 
-    // Lier la déclaration au bordereau
+    // Lier la dÃ©claration au bordereau
     if (bordereauId) {
       declaration.bordereauId = bordereauId;
 
-      // Mettre à jour les statistiques du bordereau
+      // Mettre Ã  jour les statistiques du bordereau
       const current = bordereauUpdates.get(bordereauId) || { count: 0, total: 0 };
       bordereauUpdates.set(bordereauId, {
         count: current.count + 1,
@@ -852,7 +1487,7 @@ export async function seedDeclarations(
 
   await db.declarations.bulkAdd(declarations as Declaration[]);
 
-  // Update bordereaux avec le nombre réel de déclarations et le montant total
+  // Update bordereaux avec le nombre rÃ©el de dÃ©clarations et le montant total
   for (const [id, stats] of bordereauUpdates.entries()) {
     await db.bordereauxRecette.update(id, {
       nombreDeclarations: stats.count,
@@ -861,25 +1496,25 @@ export async function seedDeclarations(
     });
   }
 
-  console.log(`✅ ${count} déclarations créées et liées aux bordereaux`);
+  console.log(`âœ… ${count} dÃ©clarations crÃ©Ã©es et liÃ©es aux bordereaux`);
   return declarations;
 }
 
 export async function seedApprovisionnements(personnelIds: number[], count: number = 20) {
-  console.log(`🌱 Seeding ${count} approvisionnements...`);
+  console.log(`ðŸŒ± Seeding ${count} approvisionnements...`);
 
   const approvisionnements: Partial<Approvisionnement>[] = [];
   const now = new Date();
-  const exercices = [2023, 2024, 2025];
+  const exercices = [2024, 2025, 2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
     const date = randomDate(
       new Date(exercice, 0, 1),
-      exercice === 2025 ? now : new Date(exercice, 11, 31),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
     );
     const type = 'appro';
-    // Générer des quantités aléatoires pour chaque valeur de timbre
+    // GÃ©nÃ©rer des quantitÃ©s alÃ©atoires pour chaque valeur de timbre
     const timbres: Timbres = {
       100: randomAmount(100, 1000),
       200: randomAmount(80, 800),
@@ -922,26 +1557,26 @@ export async function seedApprovisionnements(personnelIds: number[], count: numb
   }
 
   await db.approvisionnements.bulkAdd(approvisionnements as unknown as Approvisionnement[]);
-  console.log(`✅ ${count} approvisionnements créés`);
+  console.log(`âœ… ${count} approvisionnements crÃ©Ã©s`);
   return approvisionnements;
 }
 
 export async function seedRemises(personnelIds: number[], count: number = 50) {
-  console.log(`🌱 Seeding ${count} remises...`);
+  console.log(`ðŸŒ± Seeding ${count} remises...`);
 
   const remises: Partial<Remise>[] = [];
   const now = new Date();
-  const exercices = [2023, 2024, 2025];
+  const exercices = [2024, 2025, 2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
     const date = randomDate(
       new Date(exercice, 0, 1),
-      exercice === 2025 ? now : new Date(exercice, 11, 31),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
     );
     const numeroRemise = `REM-${exercice}-${String(i + 1).padStart(4, '0')}`;
 
-    // Générer des quantités aléatoires pour chaque valeur de timbre
+    // GÃ©nÃ©rer des quantitÃ©s alÃ©atoires pour chaque valeur de timbre
     const timbres: Timbres = {
       100: randomAmount(50, 500),
       200: randomAmount(40, 400),
@@ -983,26 +1618,26 @@ export async function seedRemises(personnelIds: number[], count: number = 50) {
   }
 
   await db.remises.bulkAdd(remises as unknown as Remise[]);
-  console.log(`✅ ${count} remises créées`);
+  console.log(`âœ… ${count} remises crÃ©Ã©es`);
   return remises;
 }
 
 export async function seedVersements(personnelIds: number[], count: number = 60) {
-  console.log(`🌱 Seeding ${count} versements...`);
+  console.log(`ðŸŒ± Seeding ${count} versements...`);
 
   const versements: Partial<Versement>[] = [];
   const now = new Date();
-  const exercices = [2023, 2024, 2025];
+  const exercices = [2024, 2025, 2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
     const date = randomDate(
       new Date(exercice, 0, 1),
-      exercice === 2025 ? now : new Date(exercice, 11, 31),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
     );
     const numeroVersement = `VERS-${exercice}-${String(i + 1).padStart(4, '0')}`;
 
-    // Générer des quantités aléatoires pour chaque valeur de timbre (vendus)
+    // GÃ©nÃ©rer des quantitÃ©s alÃ©atoires pour chaque valeur de timbre (vendus)
     const timbres: Timbres = {
       100: randomAmount(20, 200),
       200: randomAmount(15, 150),
@@ -1044,16 +1679,16 @@ export async function seedVersements(personnelIds: number[], count: number = 60)
   }
 
   await db.versements.bulkAdd(versements as unknown as Versement[]);
-  console.log(`✅ ${count} versements créés`);
+  console.log(`âœ… ${count} versements crÃ©Ã©s`);
   return versements;
 }
 
 export async function seedBalancesEntree(personnelIds: number[], count: number = 5) {
-  console.log(`🌱 Seeding ${count} balances d'entrée...`);
+  console.log(`ðŸŒ± Seeding ${count} balances d'entrÃ©e...`);
 
   const balances: Partial<BalanceEntree>[] = [];
   const now = new Date();
-  const exercices = [2023, 2024, 2025];
+  const exercices = [2024, 2025, 2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -1062,7 +1697,7 @@ export async function seedBalancesEntree(personnelIds: number[], count: number =
     const types = ['BE-S1', 'BE-S2', 'BE-S3'];
     const type = types[i % types.length]!;
 
-    // Générer des quantités aléatoires pour le stock initial
+    // GÃ©nÃ©rer des quantitÃ©s alÃ©atoires pour le stock initial
     const timbres: Timbres = {
       100: randomAmount(500, 2000),
       200: randomAmount(400, 1500),
@@ -1099,7 +1734,7 @@ export async function seedBalancesEntree(personnelIds: number[], count: number =
   }
 
   await db.balancesEntree.bulkAdd(balances as unknown as BalanceEntree[]);
-  console.log(`✅ ${count} balances d'entrée créées`);
+  console.log(`âœ… ${count} balances d'entrÃ©e crÃ©Ã©es`);
   return balances;
 }
 
@@ -1109,11 +1744,11 @@ export async function seedPrevisions(
   count: number = 30,
   sousChapitreIds?: number[],
 ) {
-  console.log(`🌱 Seeding ${count} prévisions budgétaires...`);
+  console.log(`ðŸŒ± Seeding ${count} prÃ©visions budgÃ©taires...`);
 
   const previsions: Partial<Prevision>[] = [];
   const now = new Date();
-  const exercices = [2023, 2024, 2025];
+  const exercices = [2024, 2025, 2026];
 
   for (let i = 0; i < count; i++) {
     const montantPrevu = randomAmount(500000, 10000000);
@@ -1127,11 +1762,11 @@ export async function seedPrevisions(
       'cloturee',
     ];
     const statut =
-      exercice < 2025
+      exercice < 2026
         ? randomChoice(['validee' as const, 'cloturee' as const])
         : randomChoice(statuts);
 
-    const obs = Math.random() > 0.6 ? 'Prévision conforme au budget' : undefined;
+    const obs = Math.random() > 0.6 ? 'PrÃ©vision conforme au budget' : undefined;
 
     const prevision: Partial<Prevision> = {
       exercice,
@@ -1150,7 +1785,7 @@ export async function seedPrevisions(
       prevision.observations = obs;
     }
 
-    // Associer éventuellement un sous-chapitre à la prévision si fourni
+    // Associer Ã©ventuellement un sous-chapitre Ã  la prÃ©vision si fourni
     if (sousChapitreIds && sousChapitreIds.length > 0 && Math.random() > 0.3) {
       prevision.sousChapitreId = randomChoice(sousChapitreIds);
     }
@@ -1159,7 +1794,7 @@ export async function seedPrevisions(
   }
 
   await db.previsions.bulkAdd(previsions as unknown as Prevision[]);
-  console.log(`✅ ${count} prévisions créées`);
+  console.log(`âœ… ${count} prÃ©visions crÃ©Ã©es`);
   return previsions;
 }
 
@@ -1171,27 +1806,27 @@ export async function seedMandats(
   bordereauMandats: BordereauMandat[],
   count: number = 200,
 ) {
-  console.log(`🌱 Seeding ${count} mandats de dépense...`);
+  console.log(`ðŸŒ± Seeding ${count} mandats de dÃ©pense...`);
 
   const beneficiaires = [
     'THEODULE DIRO LAHUET',
     'SANOGO OUMAR',
     'IDRISSA KONATE',
-    'SORO TIÉGBÉ',
+    'SORO TIÃ‰GBÃ‰',
     'DIABY FANTA',
     'DANIEL TRABI',
     'ALI SANOGO',
     'AMINA ASSI ALEX-PARFAIT',
     'YOGOLI KOFFI',
     'RECEVEUR MUNICIPAL',
-    'Société ÉLECTRICITÉ GÉNÉRALE',
-    "Entreprise BTP CÔTE D'IVOIRE",
+    'SociÃ©tÃ© Ã‰LECTRICITÃ‰ GÃ‰NÃ‰RALE',
+    "Entreprise BTP CÃ”TE D'IVOIRE",
     'SARL FOURNITURES BUREAU',
     'Cabinet AUDIT CONSEIL',
     'Garage AUTO REPAIR',
   ];
 
-  const objets = ['INDEMNITE DE FONCTION', 'TRANSP. & FRAIS DE MISSION', "Régie d'avance"];
+  const objets = ['INDEMNITE DE FONCTION', 'TRANSP. & FRAIS DE MISSION', "RÃ©gie d'avance"];
 
   const modesPaiement: Array<'virement' | 'cheque' | 'especes' | 'autre'> = [
     'virement',
@@ -1206,10 +1841,10 @@ export async function seedMandats(
   const mandats: Partial<Mandat>[] = [];
   const now = new Date();
 
-  // Map pour suivre les mises à jour des bordereaux (nombre de mandats et montant total)
+  // Map pour suivre les mises Ã  jour des bordereaux (nombre de mandats et montant total)
   const bordereauUpdates = new Map<number, { count: number; total: number }>();
 
-  // Trier les bordereaux par date pour une meilleure répartition
+  // Trier les bordereaux par date pour une meilleure rÃ©partition
   const sortedBordereaux = [...bordereauMandats].sort((a, b) => {
     const dateA = a.dateEmission ? new Date(a.dateEmission).getTime() : 0;
     const dateB = b.dateEmission ? new Date(b.dateEmission).getTime() : 0;
@@ -1217,26 +1852,26 @@ export async function seedMandats(
   });
 
   for (let i = 0; i < count; i++) {
-    // Choisir un bordereau aléatoirement
+    // Choisir un bordereau alÃ©atoirement
     const bordereau = randomChoice(sortedBordereaux);
     const exercice = bordereau.exercice;
     const bordereauId = bordereau.id;
 
-    // La date du mandat doit être dans la période du bordereau
-    // Le mandat doit être créé avant ou à la date d'émission du bordereau
+    // La date du mandat doit Ãªtre dans la pÃ©riode du bordereau
+    // Le mandat doit Ãªtre crÃ©Ã© avant ou Ã  la date d'Ã©mission du bordereau
     const bordereauDate = bordereau.dateEmission
       ? new Date(bordereau.dateEmission)
       : new Date(exercice, 11, 31);
     const startOfYear = new Date(exercice, 0, 1);
 
-    // Date du mandat : entre le début de l'année et la date du bordereau
+    // Date du mandat : entre le dÃ©but de l'annÃ©e et la date du bordereau
     const dateMandat = randomDate(startOfYear, bordereauDate);
 
     const numeroMandat = String(i + 1);
     const montant = randomAmount(5000, 500000);
 
     const statuts: Array<'emis' | 'paye'> = ['emis', 'paye'];
-    // Les mandats liés à un bordereau fermé sont émis ou payés
+    // Les mandats liÃ©s Ã  un bordereau fermÃ© sont Ã©mis ou payÃ©s
     const statut =
       bordereau.statut === 'ferme'
         ? randomChoice(['emis' as const, 'paye' as const])
@@ -1300,7 +1935,7 @@ export async function seedMandats(
       mandat.observations = obs;
     }
 
-    // Mettre à jour les statistiques du bordereau
+    // Mettre Ã  jour les statistiques du bordereau
     if (bordereauId) {
       const current = bordereauUpdates.get(bordereauId) || { count: 0, total: 0 };
       bordereauUpdates.set(bordereauId, {
@@ -1314,7 +1949,7 @@ export async function seedMandats(
 
   await db.mandats.bulkAdd(mandats as unknown as Mandat[]);
 
-  // Mettre à jour les bordereaux avec le nombre réel de mandats et le montant total
+  // Mettre Ã  jour les bordereaux avec le nombre rÃ©el de mandats et le montant total
   for (const [id, stats] of bordereauUpdates.entries()) {
     await db.bordereauMandats.update(id, {
       nombreMandats: stats.count,
@@ -1323,34 +1958,34 @@ export async function seedMandats(
     });
   }
 
-  console.log(`✅ ${count} mandats créés et liés aux bordereaux`);
+  console.log(`âœ… ${count} mandats crÃ©Ã©s et liÃ©s aux bordereaux`);
   return mandats;
 }
 
 export async function seedBordereauMandats(personnelIds: number[], count: number = 20) {
-  console.log(`🌱 Seeding ${count} bordereaux d'émission des mandats...`);
+  console.log(`ðŸŒ± Seeding ${count} bordereaux d'Ã©mission des mandats...`);
 
   const bordereauMandats: Partial<BordereauMandat>[] = [];
   const now = new Date();
 
-  // Créer des bordereaux répartis sur les exercices avec des dates cohérentes
-  const exercices = [2023, 2024, 2025];
+  // CrÃ©er des bordereaux rÃ©partis sur les exercices avec des dates cohÃ©rentes
+  const exercices = [2024, 2025, 2026];
   let numeroGlobal = 1;
 
   for (let i = 0; i < count; i++) {
     const exercice = exercices[i % exercices.length]!;
-    // Date d'émission répartie sur l'année
+    // Date d'Ã©mission rÃ©partie sur l'annÃ©e
     const mois = Math.floor((i / count) * 12);
     const dateEmission = new Date(exercice, mois, randomAmount(1, 28));
 
-    // Si c'est 2025 et la date dépasse maintenant, ajuster
-    if (exercice === 2025 && dateEmission > now) {
+    // Si c'est 2025 et la date dÃ©passe maintenant, ajuster
+    if (exercice === 2026 && dateEmission > now) {
       dateEmission.setTime(now.getTime() - randomAmount(1, 30) * 24 * 60 * 60 * 1000);
     }
 
     const statuts: Array<'ouvert' | 'ferme'> = ['ouvert', 'ferme'];
-    // Les exercices passés sont fermés, l'année en cours peut être ouvert
-    const statut = exercice < 2025 ? 'ferme' : randomChoice(statuts);
+    // Les exercices passÃ©s sont fermÃ©s, l'annÃ©e en cours peut Ãªtre ouvert
+    const statut = exercice < 2026 ? 'ferme' : randomChoice(statuts);
 
     const obs = Math.random() > 0.6 ? 'Bordereau conforme' : undefined;
 
@@ -1359,8 +1994,8 @@ export async function seedBordereauMandats(personnelIds: number[], count: number
       exercice,
       dateEmission,
       mairieId: DEFAULT_MAIRIE_ID,
-      montantTotal: 0, // Sera calculé après insertion des mandats
-      nombreMandats: 0, // Sera calculé après insertion des mandats
+      montantTotal: 0, // Sera calculÃ© aprÃ¨s insertion des mandats
+      nombreMandats: 0, // Sera calculÃ© aprÃ¨s insertion des mandats
       statut,
       personnelId: randomChoice(personnelIds),
       createdAt: dateEmission,
@@ -1374,7 +2009,7 @@ export async function seedBordereauMandats(personnelIds: number[], count: number
     bordereauMandats.push(bordereauMandat);
   }
 
-  // Insérer les bordereaux et récupérer les IDs
+  // InsÃ©rer les bordereaux et rÃ©cupÃ©rer les IDs
   const insertedIds = await db.bordereauMandats.bulkAdd(
     bordereauMandats as unknown as BordereauMandat[],
     { allKeys: true },
@@ -1386,21 +2021,21 @@ export async function seedBordereauMandats(personnelIds: number[], count: number
     id: insertedIds[index],
   })) as BordereauMandat[];
 
-  console.log(`✅ ${count} bordereaux mandats créés`);
+  console.log(`âœ… ${count} bordereaux mandats crÃ©Ã©s`);
   return result;
 }
 
 export async function seedQuotites(count: number = 10) {
-  console.log(`🌱 Seeding ${count} quotités...`);
+  console.log(`ðŸŒ± Seeding ${count} quotitÃ©s...`);
 
   const quotites: Partial<Quotite>[] = [];
   const now = new Date();
-  const types = ['Marché', 'Abattoirs', 'Stationnement'];
+  const types = ['MarchÃ©', 'Abattoirs', 'Stationnement'];
   const descriptions = ['Ticket', 'Macaron', 'Droit de place', 'Autocollant'];
   // Prix obligatoires pour correspondre aux timbres (100, 200, 300, 500, 600, 1000)
   const requiredPrices = [100, 200, 300, 500, 600, 1000];
 
-  // D'abord, créer une quotité pour chaque prix obligatoire
+  // D'abord, crÃ©er une quotitÃ© pour chaque prix obligatoire
   for (const prix of requiredPrices) {
     const type = randomChoice(types);
     const code = `${type.substring(0, 2).toUpperCase()}${prix}`;
@@ -1411,14 +2046,14 @@ export async function seedQuotites(count: number = 10) {
       description: randomChoice(descriptions),
       type,
       mairieId: DEFAULT_MAIRIE_ID,
-      actif: true, // Toujours actif pour les quotités obligatoires
+      actif: true, // Toujours actif pour les quotitÃ©s obligatoires
       createdAt: randomDate(new Date(2023, 0, 1), now),
       updatedAt: now,
     };
     quotites.push(quotite);
   }
 
-  // Ensuite, créer des quotités supplémentaires aléatoires
+  // Ensuite, crÃ©er des quotitÃ©s supplÃ©mentaires alÃ©atoires
   const additionalCount = Math.max(0, count - requiredPrices.length);
   for (let i = 0; i < additionalCount; i++) {
     const type = randomChoice(types);
@@ -1439,6 +2074,7 @@ export async function seedQuotites(count: number = 10) {
   }
 
   await db.quotites.bulkAdd(quotites as Quotite[]);
-  console.log(`✅ ${quotites.length} quotités créées`);
+  console.log(`âœ… ${quotites.length} quotitÃ©s crÃ©Ã©es`);
   return quotites;
 }
+

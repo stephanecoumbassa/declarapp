@@ -444,13 +444,13 @@ const printSection = async (sectionName: string) => {
   let templateUrl = '';
   if (sectionName === 'section1') {
     data = JSON.parse(JSON.stringify(sectionIData.value));
-    templateUrl = '/SectionI.html';
+    templateUrl = 'SectionI.html';
   } else if (sectionName === 'section2') {
     data = JSON.parse(JSON.stringify(sectionIIData.value));
-    templateUrl = '/SectionII.html';
+    templateUrl = 'SectionII.html';
   } else if (sectionName === 'section3') {
     data = JSON.parse(JSON.stringify(sectionIIIData.value));
-    templateUrl = '/SectionIII.html';
+    templateUrl = 'SectionIII.html';
   }
   const dataWithTotals = addMonthlyTotals(data, sectionName);
 

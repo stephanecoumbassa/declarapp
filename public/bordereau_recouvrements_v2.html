@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Bordereau des Recouvrements</title>
+    <script src="dexie.min.js"></script>
     <style>
       @page {
         size: A4 landscape;
@@ -21,6 +22,49 @@
         font-size: 11px;
         background: #f5f5dc;
         padding: 20px;
+      }
+
+      /* Bouton d'impression */
+      #error-display {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #ffebee;
+        color: #c62828;
+        padding: 20px;
+        border: 2px solid #ef5350;
+        border-radius: 8px;
+        z-index: 9999;
+        font-weight: bold;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        display: none;
+      }
+
+      .print-button {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 12px 24px;
+        background-color: #1976d2;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        z-index: 1000;
+      }
+      .print-button:hover {
+        background-color: #1565c0;
+      }
+
+      @media print {
+        .print-button {
+          display: none !important;
+        }
       }
 
       .page {
@@ -194,6 +238,10 @@
     </style>
   </head>
   <body>
+    <div id="error-display"></div>
+    <!-- Bouton d'impression -->
+    <button class="print-button" onclick="imprimerPage()">🖨️ Imprimer</button>
+
     <div class="page">
       <div class="header">
         <div class="header-left">
@@ -533,71 +581,144 @@
         }
       });
 
+      // Configuration IndexedDB avec Dexie
+      function showError(msg) {
+        console.error(msg);
+        const el = document.getElementById('error-display');
+        if (el) {
+          el.style.display = 'block';
+          el.innerHTML += '<p>' + msg + '</p>';
+        }
+      }
+
+      let db;
+      async function initDB() {
+        if (typeof Dexie === 'undefined') {
+          showError("Erreur critique : La librairie Dexie.js n'a pas pu être chargée.");
+          throw new Error('Dexie is undefined');
+        }
+
+        if (db) return db; // Déjà initialisé
+
+        try {
+          db = new Dexie('TresorDatabase');
+          db.version(13).stores({
+            mairies: '++id, nom, code, ville',
+            taxes: '++id, code, libelle, mairieId, type, actif',
+            declarations:
+              '++id, numeroPiece, dateEncaissement, mairieId, taxeId, statut, bordereauId, personnelId, exercice',
+            bordereauxRecette: '++id, numero, annee, mairieId, statut, personnelId',
+            utilisateurs: '++id, username, email, role, mairieId, actif',
+            approvisionnements: '++id, date, exercice, mairieId, type, personnelId',
+            remises: '++id, numeroRemise, date, exercice, mairieId, personnelId',
+            versements: '++id, numeroVersement, date, exercice, mairieId, personnelId',
+            balancesEntree:
+              '++id, date, exercice, mairieId, type, personnelId, [exercice+mairieId]',
+            quotites: '++id, code, prix, type, mairieId, actif',
+            chapitres: '++id, code, libelle, mairieId, actif',
+            sousChapitres: '++id, code, libelle, mairieId, actif',
+            previsions: '++id, exercice, chapitreId, mairieId, statut, personnelId',
+            mandats:
+              '++id, numeroMandat, dateMandat, exercice, chapitreId, sousChapitreId, previsionId, bordereauMandatId, mairieId, statut, personnelId',
+            bordereauMandats: '++id, numero, exercice, mairieId, statut, personnelId',
+            printData: '++id, type, createdAt',
+          });
+
+          if (!(await db.isOpen())) {
+            await db.open();
+          }
+
+          return db;
+        } catch (e) {
+          showError("Erreur d'initialisation de la base de données : " + e.message);
+          throw e;
+        }
+      }
+
+      // Charger les données depuis IndexedDB si bordereauId est fourni
+      async function loadFromDatabase() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const bordereauId = parseInt(urlParams.get('bordereauId'), 10);
+        const shouldPrint = urlParams.get('print') === 'true';
+
+        if (!bordereauId) {
+          console.log('Pas de bordereauId - en attente de message postMessage');
+          return;
+        }
+
+        try {
+          console.log('Chargement du bordereau depuis IndexedDB:', bordereauId);
+          await initDB();
+          const bordereau = await db.bordereauxRecette.get(bordereauId);
+
+          if (!bordereau) {
+            showError('Bordereau non trouvé : ' + bordereauId);
+            return;
+          }
+
+          // Récupérer la mairie
+          const mairie = await db.mairies.toCollection().first();
+
+          // Récupérer les déclarations liées à ce bordereau
+          const declarations = await db.declarations
+            .where('bordereauId')
+            .equals(bordereauId)
+            .toArray();
+
+          // Récupérer toutes les taxes pour le mapping
+          const taxes = await db.taxes.toArray();
+          const taxesMap = new Map(taxes.map((t) => [t.id, t]));
+
+          // Formater les déclarations pour l'affichage
+          const declarationsFormatted = declarations.map((decl) => {
+            const taxe = taxesMap.get(decl.taxeId);
+            return {
+              numeroPiece: decl.numeroPiece || '',
+              natureRecette: taxe ? taxe.libelle : '',
+              nomPartieVersante: decl.nomPartieVersante || 'RÉGISSEUR',
+              article: taxe ? taxe.code : '',
+              patrimonial: decl.patrimonial || '',
+              montant: decl.montantRecette || decl.montant || 0,
+              dateEncaissement: decl.dateEncaissement
+                ? new Date(decl.dateEncaissement).toLocaleDateString('fr-FR')
+                : '-',
+            };
+          });
+
+          // Préparer les données pour le remplissage
+          const data = {
+            mairie: mairie?.nom || 'Mairie de Bodokro',
+            ville: mairie?.ville || 'Bodokro',
+            codeCommune: mairie?.code || '360',
+            exercice: bordereau.annee,
+            numeroBordereau: `${bordereau.numero}-${bordereau.annee % 100}`,
+            numeroSimple: bordereau.numero,
+            dateBordereau: new Date().toLocaleDateString('fr-FR'),
+            montantTotal: bordereau.montantTotal,
+            totalPrecedent: bordereau.totalPrecedent || 0,
+            declarations: declarationsFormatted,
+          };
+
+          remplirBordereau(data);
+
+          if (shouldPrint) {
+            setTimeout(() => window.print(), 500);
+          }
+        } catch (error) {
+          showError('Erreur lors du chargement : ' + error.message);
+        }
+      }
+
+      // Fonction d'impression manuelle
+      function imprimerPage() {
+        window.print();
+      }
+
       // Au chargement
       document.addEventListener('DOMContentLoaded', () => {
         console.log('Page de bordereau chargée et prête');
-
-        // Tenter de récupérer les données depuis Dexie (IndexedDB)
-        if (typeof Dexie !== 'undefined') {
-          const db = new Dexie('TresorDatabase');
-          db.open()
-            .then(async () => {
-              try {
-                // Récupérer le dernier élément ajouté
-                const printDataCollection = await db
-                  .table('printData')
-                  .orderBy('id')
-                  .reverse()
-                  .limit(1)
-                  .toArray();
-
-                if (printDataCollection && printDataCollection.length > 0) {
-                  const printData = printDataCollection[0];
-
-                  // Vérifier si c'est pour nous (daté de moins de 1 minute)
-                  const now = new Date();
-                  const dataTime = new Date(printData.createdAt);
-                  const diffMs = now - dataTime;
-
-                  // On accepte si c'est le bon type et récent (< 60 secondes)
-                  if (
-                    (printData.type === 'FILL_AND_PRINT' || printData.type === 'FILL_BORDEREAU') &&
-                    diffMs < 60000
-                  ) {
-                    const messageData = printData.data; // { type: ..., data: ... }
-
-                    // Vérification spécifique pour être sûr que c'est un bordereau (a des déclarations)
-                    if (
-                      messageData &&
-                      messageData.data &&
-                      messageData.data.declarations !== undefined
-                    ) {
-                      console.log('Données trouvées dans IndexedDB:', printData);
-                      remplirBordereau(messageData.data);
-
-                      // Supprimer l'enregistrement
-                      await db.table('printData').delete(printData.id);
-
-                      // Imprimer
-                      setTimeout(() => {
-                        window.print();
-                      }, 1000);
-                    }
-                  }
-                }
-              } catch (err) {
-                console.error('Erreur lors de la lecture de IndexedDB:', err);
-              }
-            })
-            .catch((err) => {
-              console.log(
-                "Impossible d'ouvrir la base de données (peut-être pas encore créée):",
-                err,
-              );
-            });
-        }
+        loadFromDatabase();
       });
     </script>
-    <script src="dexie.min.js"></script>
   </body>
 </html>

@@ -64,26 +64,6 @@
                 </q-item-section>
               </q-item>
 
-              <q-item clickable v-close-popup @click="openLicenseDialog" class="menu-item">
-                <q-item-section avatar>
-                  <q-icon
-                    name="verified"
-                    :color="licenseStore.isLicensed ? 'positive' : 'warning'"
-                  />
-                </q-item-section>
-                <q-item-section>
-                  <q-item-label>
-                    Licence
-                    <q-chip v-if="licenseStore.licenseType" size="sm" dense class="q-ml-xs">
-                      {{ licenseStore.licenseType }}
-                    </q-chip>
-                  </q-item-label>
-                  <q-item-label caption v-if="licenseStore.daysRemaining">
-                    {{ licenseStore.daysRemaining }} jours restants
-                  </q-item-label>
-                </q-item-section>
-              </q-item>
-
               <q-separator class="q-my-sm" />
 
               <q-item clickable v-close-popup @click="onLogout" class="menu-item logout-item">
@@ -120,303 +100,354 @@
         </q-item-section>
       </q-item>
 
-        <q-list padding class="q-px-sm">
-          <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
-            <q-icon name="dashboard" size="18px" class="q-mr-xs" />
-            Declarations & Bordereaux
-          </q-item-label>
+      <q-list padding class="q-px-sm">
+        <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
+          <q-icon name="dashboard" size="18px" class="q-mr-xs" />
+          Declarations & Bordereaux
+        </q-item-label>
 
-          <q-item
-            clickable
-            v-ripple
-            to="/"
-            exact
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="dashboard" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Tableau de Bord</q-item-label>
-            </q-item-section>
-          </q-item>
+        <q-item
+          clickable
+          v-ripple
+          to="/"
+          exact
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="dashboard" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Tableau de Bord</q-item-label>
+          </q-item-section>
+        </q-item>
 
-          <q-item
-            clickable
-            v-ripple
-            to="/declarations"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="description" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Déclarations</q-item-label>
-            </q-item-section>
-          </q-item>
+        <q-item
+          clickable
+          v-ripple
+          to="/declarations"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="description" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Déclarations</q-item-label>
+          </q-item-section>
+        </q-item>
 
-          <q-item
-            clickable
-            v-ripple
-            to="/bordereaux"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="receipt_long" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Bordereaux</q-item-label>
-            </q-item-section>
-          </q-item>
+        <q-item
+          clickable
+          v-ripple
+          to="/bordereaux"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="receipt_long" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Bordereaux</q-item-label>
+          </q-item-section>
+        </q-item>
 
-          <q-item
-            clickable
-            v-ripple
-            to="/taxes"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="calculate" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Taxes</q-item-label>
-            </q-item-section>
-          </q-item>
+        <q-item
+          clickable
+          v-ripple
+          to="/taxes"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="calculate" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Taxes</q-item-label>
+          </q-item-section>
+        </q-item>
 
+        <q-separator class="q-my-md" />
+
+        <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
+          <q-icon name="confirmation_number" size="18px" class="q-mr-xs" />
+          Gestion des Tickets
+        </q-item-label>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/dashboard"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="dashboard" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dashboard Tickets</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/sections"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="folder_open" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Sections</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/balance-entree"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="balance" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Balance d'Entrée</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/approvisionnements"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="inventory" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Approvisionnements</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/remises"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="local_shipping" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Remises</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/versements"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="upload" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Versements</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/statistiques"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="bar_chart" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Statistiques</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/quotites"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="toll" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Quotités</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator class="q-my-md" />
+
+        <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
+          <q-icon name="receipt" size="18px" class="q-mr-xs" />
+          Gestion des Dépenses
+        </q-item-label>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/dashboard"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="dashboard" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dashboard Dépenses</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/chapitres"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="category" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Chapitres</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/sous-chapitres"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="view_list" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Sous-Chapitres</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/previsions"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="pie_chart" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Prévisions</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/mandats"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="receipt" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Mandats</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/bordereaux-mandats-gestion"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="folder_open" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Gestion Bordereaux</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/statistiques"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="bar_chart" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Statistiques</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <template v-if="authStore.isAdmin">
           <q-separator class="q-my-md" />
 
           <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
-            <q-icon name="confirmation_number" size="18px" class="q-mr-xs" />
-            Gestion des Tickets
+            <q-icon name="admin_panel_settings" size="18px" class="q-mr-xs" />
+            Administration
           </q-item-label>
 
           <q-item
             clickable
             v-ripple
-            to="/app2/dashboard"
+            to="/utilisateurs"
             class="nav-item q-mb-xs"
             active-class="nav-item-active"
           >
             <q-item-section avatar>
-              <q-icon name="dashboard" color="grey-7" />
+              <q-icon name="manage_accounts" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Dashboard Tickets</q-item-label>
+              <q-item-label>Utilisateurs</q-item-label>
             </q-item-section>
           </q-item>
 
           <q-item
             clickable
             v-ripple
-            to="/app2/sections"
+            to="/mairies"
             class="nav-item q-mb-xs"
             active-class="nav-item-active"
           >
             <q-item-section avatar>
-              <q-icon name="folder_open" />
+              <q-icon name="location_city" />
             </q-item-section>
             <q-item-section>
-              <q-item-label>Sections</q-item-label>
+              <q-item-label>Mairies</q-item-label>
             </q-item-section>
           </q-item>
 
           <q-item
             clickable
             v-ripple
-            to="/app2/balance-entree"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="balance" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Balance d'Entrée</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app2/approvisionnements"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="inventory" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Approvisionnements</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app2/remises"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="local_shipping" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Remises</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app2/versements"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="upload" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Versements</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app2/statistiques"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="bar_chart" color="grey-7" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Statistiques</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app2/quotites"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="toll" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Quotités</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-separator class="q-my-md" />
-
-          <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
-            <q-icon name="receipt" size="18px" class="q-mr-xs" />
-            Gestion des Dépenses
-          </q-item-label>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/dashboard"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="dashboard" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Dashboard Dépenses</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/chapitres"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="category" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Chapitres</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/sous-chapitres"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="view_list" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Sous-Chapitres</q-item-label>
-            </q-item-section>
-          </q-item>
-
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/previsions"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="pie_chart" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Prévisions</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/mandats"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="receipt" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Mandats</q-item-label>
-            </q-item-section>
-          </q-item>
-
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/bordereaux-mandats-gestion"
-            class="nav-item q-mb-xs"
-            active-class="nav-item-active"
-          >
-            <q-item-section avatar>
-              <q-icon name="folder_open" />
-            </q-item-section>
-            <q-item-section>
-              <q-item-label>Gestion Bordereaux</q-item-label>
-            </q-item-section>
-          </q-item>
-
-          <q-item
-            clickable
-            v-ripple
-            to="/app3/statistiques"
+            to="/statistiques"
             class="nav-item q-mb-xs"
             active-class="nav-item-active"
           >
@@ -428,91 +459,37 @@
             </q-item-section>
           </q-item>
 
-          <template v-if="authStore.isAdmin">
-            <q-separator class="q-my-md" />
+          <q-item
+            clickable
+            v-ripple
+            to="/admin/seeders"
+            class="nav-item q-mb-xs"
+            active-class="nav-item-active"
+          >
+            <q-item-section avatar>
+              <q-icon name="database" color="grey-7" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Seeders (Test)</q-item-label>
+            </q-item-section>
+          </q-item>
 
-            <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
-              <q-icon name="admin_panel_settings" size="18px" class="q-mr-xs" />
-              Administration
-            </q-item-label>
-
-            <q-item
-              clickable
-              v-ripple
-              to="/utilisateurs"
-              class="nav-item q-mb-xs"
-              active-class="nav-item-active"
-            >
-              <q-item-section avatar>
-                <q-icon name="manage_accounts" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Utilisateurs</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
-              v-ripple
-              to="/mairies"
-              class="nav-item q-mb-xs"
-              active-class="nav-item-active"
-            >
-              <q-item-section avatar>
-                <q-icon name="location_city" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Mairies</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
-              v-ripple
-              to="/statistiques"
-              class="nav-item q-mb-xs"
-              active-class="nav-item-active"
-            >
-              <q-item-section avatar>
-                <q-icon name="bar_chart" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Statistiques</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
-              v-ripple
-              to="/admin/seeders"
-              class="nav-item q-mb-xs"
-              active-class="nav-item-active"
-            >
-              <q-item-section avatar>
-                <q-icon name="database" color="grey-7" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Seeders (Test)</q-item-label>
-              </q-item-section>
-            </q-item>
-
-            <q-item
-              clickable
-              v-ripple
-              to="/admin/backup"
-              class="nav-item q-mb-xs"
-              active-class="nav-item-active"
-            >
-              <q-item-section avatar>
-                <q-icon name="backup" />
-              </q-item-section>
-              <q-item-section>
-                <q-item-label>Sauvegarde</q-item-label>
-              </q-item-section>
-            </q-item>
-          </template>
-        </q-list>
-
+          <q-item
+            clickable
+            v-ripple
+            to="/admin/backup"
+            class="nav-item q-mb-xs"
+            active-class="nav-item-active"
+          >
+            <q-item-section avatar>
+              <q-icon name="backup" />
+            </q-item-section>
+            <q-item-section>
+              <q-item-label>Sauvegarde</q-item-label>
+            </q-item-section>
+          </q-item>
+        </template>
+      </q-list>
     </q-drawer>
 
     <q-page-container class="modern-page-container">
@@ -527,13 +504,6 @@
         </transition>
       </router-view>
     </q-page-container>
-
-    <!-- Dialog de gestion de licence -->
-    <LicenseDialog
-      v-model="showLicenseDialog"
-      @close="showLicenseDialog = false"
-      @activated="licenseStore.checkLicense()"
-    />
   </q-layout>
 </template>
 
@@ -542,48 +512,20 @@ import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useQuasar } from 'quasar';
 import { useAuthStore } from 'src/stores/auth-store';
-import { useLicenseStore } from 'src/stores/license-store';
 import ThemeToggle from 'src/components/ThemeToggle.vue';
-import LicenseDialog from 'src/components/LicenseDialog.vue';
 
 const router = useRouter();
 const $q = useQuasar();
 const authStore = useAuthStore();
-const licenseStore = useLicenseStore();
 
 const leftDrawerOpen = ref(false);
-const showLicenseDialog = ref(false);
 
 onMounted(async () => {
-  // Vérifier la licence au démarrage
-  await licenseStore.checkLicense();
-
-  // Afficher un avertissement si la licence expire bientôt
-  if (licenseStore.isExpiringSoon && licenseStore.daysRemaining) {
-    $q.notify({
-      type: 'warning',
-      message: `Votre licence expire dans ${licenseStore.daysRemaining} jour(s)`,
-      caption: 'Veuillez renouveler votre licence',
-      timeout: 5000,
-      actions: [
-        {
-          label: 'Voir',
-          color: 'white',
-          handler: () => {
-            showLicenseDialog.value = true;
-          },
-        },
-      ],
-    });
-  }
+  // Initialisation au démarrage
 });
 
 function toggleLeftDrawer() {
   leftDrawerOpen.value = !leftDrawerOpen.value;
-}
-
-function openLicenseDialog() {
-  showLicenseDialog.value = true;
 }
 
 function onLogout() {

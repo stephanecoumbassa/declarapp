@@ -338,10 +338,8 @@ import {
   type BordereauMandat,
   type Mairie,
 } from 'src/database/db';
-import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import PageHeader from 'src/components/PageHeader.vue';
 import DataTable from 'src/components/DataTable.vue';
-import { amountToWords } from 'src/utils/numberToWords';
 
 const $q = useQuasar();
 const loading = ref(false);
@@ -603,38 +601,9 @@ function getBordereauNumero(bordereauMandatId?: number): string {
   return `${bordereau.numero}-${bordereau.exercice}`;
 }
 
-async function printMandat(mandat: Mandat) {
-  const chapitre = chapitres.value.find((c) => c.id === mandat.chapitreId);
-  const sousChapitre = sousChapitres.value.find((s) => s.id === mandat.sousChapitreId);
-  const bordereau = bordereauMandats.value.find((b) => b.id === mandat.bordereauMandatId);
-  const mairie = mairies.value[0]; // Get the first mairie
-
-  await openPrintWindowWithMessage(`/mandat_depense.html?mandatId=${mandat.id}&print=true`, {
-    type: 'FILL_MANDAT',
-    data: {
-      exercice: mandat.exercice,
-      imputationFonctionnelle: sousChapitre
-        ? `${sousChapitre.code}/${chapitre?.code}`
-        : chapitre?.code,
-      imputationPatrimoniale: mandat.patrimonial || '',
-      numeroOrdre: mandat.numeroMandat || '',
-      numeroBordereau: bordereau ? `${bordereau.numero}-${bordereau.exercice % 100}` : '',
-      objetDepense: mandat.objet,
-      periode: '', // This field is not in the Mandat interface
-      beneficiaire: mandat.beneficiaire,
-      beneficiaireDetails: '', // This field is not in the Mandat interface
-      rib: mandat.rib || '',
-      montantBrut: mandat.montant,
-      montantNet: mandat.montant,
-      montantLettres: amountToWords(mandat.montant).toUpperCase(),
-      dateEmission: new Date(mandat.dateMandat).toLocaleDateString('fr-FR'),
-      // Mairie info
-      mairieDepartement: mairie?.ville ?? '',
-      mairieCommune: mairie?.ville ?? '',
-      mairieCode: mairie?.code ?? '',
-      mairieVille: mairie?.nom ?? '',
-    },
-  });
+function printMandat(mandat: Mandat) {
+  // Ouvrir directement avec l'ID et print=true - les données sont lues depuis IndexedDB
+  window.open(`mandat_depense.html?mandatId=${mandat.id}&print=true`, '_blank');
 }
 
 async function loadData() {

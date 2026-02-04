@@ -142,7 +142,6 @@ import {
   type Taxe,
   DEFAULT_MAIRIE_ID,
 } from 'src/database/db';
-import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 import { useAuthStore } from 'src/stores/auth-store';
 import FilterBar from 'src/components/FilterBar.vue';
 import DataTable from 'src/components/DataTable.vue';
@@ -460,112 +459,17 @@ function confirmDelete(bordereau: BordereauRecette) {
   });
 }
 
-async function printBordereau(bordereau: BordereauRecette) {
-  try {
-    // Récupérer la mairie
-    const mairie = mairies.value.find((m) => m.id === bordereau.mairieId);
-
-    // Récupérer toutes les déclarations du bordereau
-    if (!bordereau.id) return;
-    const declarations = await db.declarations.where('bordereauId').equals(bordereau.id).toArray();
-
-    // Récupérer les taxes pour chaque déclaration
-    const declarationsAvecTaxes = await Promise.all(
-      declarations.map(async (decl) => {
-        const taxe = await db.taxes.get(decl.taxeId);
-        return {
-          natureRecette: taxe?.libelle || '',
-          montant: decl.montantRecette,
-          dateEncaissement: date.formatDate(decl.dateEncaissement, 'DD/MM/YYYY'),
-          nomPartieVersante: decl.nomPartieVersante,
-          article: taxe?.code || '',
-          numeroPiece: decl.numeroPiece || '',
-          statut: decl.statut || '',
-        };
-      }),
-    );
-    console.log(declarationsAvecTaxes);
-
-    // Ouvrir la page HTML
-    await openPrintWindowWithMessage(
-      '/bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id,
-      {
-        type: 'FILL_BORDEREAU',
-        data: {
-          mairie: mairie?.nom || '',
-          ville: mairie?.ville || 'Bodokro',
-          codeCommune: mairie?.code || 360,
-          exercice: bordereau.annee || new Date().getFullYear(),
-          numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
-          numeroSimple: bordereau.numero,
-          dateBordereau: bordereau.dateTransmission
-            ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
-            : date.formatDate(new Date(), 'DD/MM/YYYY'),
-          montantTotal: bordereau.montantTotal || 0,
-          totalPrecedent: bordereau.totalPrecedent || 0,
-          declarations: declarationsAvecTaxes,
-        },
-      },
-    );
-  } catch (error) {
-    console.error("Erreur lors de l'impression du bordereau:", error);
-    $q.notify({
-      type: 'negative',
-      message: "Erreur lors de l'impression du bordereau",
-    });
-  }
+function printBordereau(bordereau: BordereauRecette) {
+  // Ouvrir directement avec l'ID - les données sont lues depuis IndexedDB
+  window.open('bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id, '_blank');
 }
 
-async function downloadBordereauPDF(bordereau: BordereauRecette) {
-  try {
-    // Récupérer la mairie
-    const mairie = mairies.value.find((m) => m.id === bordereau.mairieId);
-
-    // Récupérer toutes les déclarations du bordereau
-    if (!bordereau.id) return;
-    const declarations = await db.declarations.where('bordereauId').equals(bordereau.id).toArray();
-
-    // Récupérer les taxes pour chaque déclaration
-    const declarationsAvecTaxes = await Promise.all(
-      declarations.map(async (decl) => {
-        const taxe = await db.taxes.get(decl.taxeId);
-        return {
-          natureRecette: taxe?.libelle || '',
-          montant: decl.montantRecette,
-          dateEncaissement: date.formatDate(decl.dateEncaissement, 'DD/MM/YYYY'),
-          nomPartieVersante: decl.nomPartieVersante,
-          article: taxe?.code || '',
-        };
-      }),
-    );
-
-    // Ouvrir la page HTML et lancer l'impression automatiquement
-    await openPrintWindowWithMessage(
-      '/bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id,
-      {
-        type: 'FILL_AND_PRINT',
-        data: {
-          mairie: mairie?.nom || '',
-          ville: mairie?.ville || 'Bodokro',
-          codeCommune: mairie?.code || 360,
-          exercice: bordereau.annee || new Date().getFullYear(),
-          numeroBordereau: formatNumeroBordereau(bordereau.numero, bordereau.annee),
-          numeroSimple: bordereau.numero,
-          dateBordereau: bordereau.dateTransmission
-            ? date.formatDate(bordereau.dateTransmission, 'DD/MM/YYYY')
-            : date.formatDate(new Date(), 'DD/MM/YYYY'),
-          montantTotal: bordereau.montantTotal || 0,
-          declarations: declarationsAvecTaxes,
-        },
-      },
-    );
-  } catch (error) {
-    console.error('Erreur lors du téléchargement PDF:', error);
-    $q.notify({
-      type: 'negative',
-      message: 'Erreur lors du téléchargement PDF',
-    });
-  }
+function downloadBordereauPDF(bordereau: BordereauRecette) {
+  // Ouvrir directement avec l'ID et print=true - les données sont lues depuis IndexedDB
+  window.open(
+    'bordereau_recouvrements_v2.html?bordereauId=' + bordereau.id + '&print=true',
+    '_blank',
+  );
 }
 
 onMounted(() => {
