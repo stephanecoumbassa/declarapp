@@ -113,42 +113,6 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/app2/QuotitesPage.vue'),
         name: 'app2-quotites',
       },
-      // Routes App3 - Gestion des Dépenses
-      {
-        path: 'app3/dashboard',
-        component: () => import('pages/app3/DashboardPage.vue'),
-        name: 'app3-dashboard',
-      },
-      {
-        path: 'app3/chapitres',
-        component: () => import('pages/app3/ChapitresPage.vue'),
-        name: 'app3-chapitres',
-      },
-      {
-        path: 'app3/sous-chapitres',
-        component: () => import('pages/app3/SousChapitresPage.vue'),
-        name: 'app3-sous-chapitres',
-      },
-      {
-        path: 'app3/previsions',
-        component: () => import('pages/app3/PrevisionPage.vue'),
-        name: 'app3-previsions',
-      },
-      {
-        path: 'app3/mandats',
-        component: () => import('pages/app3/MandatsPage.vue'),
-        name: 'app3-mandats',
-      },
-      {
-        path: 'app3/bordereaux-mandats-gestion',
-        component: () => import('pages/app3/BordereauxMandatsGestionPage.vue'),
-        name: 'app3-bordereaux-mandats-gestion',
-      },
-      {
-        path: 'app3/statistiques',
-        component: () => import('pages/app3/StatistiquesPage.vue'),
-        name: 'app3-statistiques',
-      },
     ],
   },
 
