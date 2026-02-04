@@ -34,6 +34,18 @@
 
     <!-- Table des versements -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredVersements"
         :columns="columns"
@@ -205,6 +217,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { db, type Quotite, type Versement, type Timbres } from 'src/database/db';
 import { useQuasar } from 'quasar';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 
@@ -259,13 +272,14 @@ const filteredVersements = computed(() => {
   if (search.value) {
     const searchLower = search.value.toLowerCase();
     result = result.filter(
-      (v) =>
-        (v.observations && v.observations.toLowerCase().includes(searchLower))
+      (v) => v.observations && v.observations.toLowerCase().includes(searchLower),
     );
   }
 
   if (filterDate.value) {
-    result = result.filter((v) => new Date(v.date).toISOString().split('T')[0] === filterDate.value);
+    result = result.filter(
+      (v) => new Date(v.date).toISOString().split('T')[0] === filterDate.value,
+    );
   }
 
   return result;
@@ -278,6 +292,10 @@ const formatMontant = (montant: number) => {
     minimumFractionDigits: 0,
   }).format(montant);
 };
+
+function exportCsv() {
+  exportToCsv(filteredVersements.value as Record<string, unknown>[], columns, 'versements');
+}
 
 const calculateTotal = () => {
   let total = 0;
@@ -361,7 +379,7 @@ const onSubmit = async () => {
     const now = new Date();
     const mairieId = 1; // À adapter selon l'utilisateur connecté
     const personnelId = 1; // À adapter selon l'utilisateur connecté
-    
+
     const data = {
       mairieId,
       exercice: form.value.exercice,

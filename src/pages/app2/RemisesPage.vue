@@ -44,6 +44,18 @@
 
     <!-- Table des remises -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredRemises"
         :columns="columns"
@@ -54,11 +66,13 @@
       >
         <template v-slot:body-cell-date="props">
           <q-td :props="props">
-            {{ new Date(props.row.date).toLocaleDateString('fr-FR', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit'
-            }) }}
+            {{
+              new Date(props.row.date).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              })
+            }}
           </q-td>
         </template>
 
@@ -99,14 +113,14 @@
 
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
-              <q-btn
-                flat
-                round
-                dense
-                icon="visibility"
-                color="grey-7"
-                @click="viewDetails(props.row)"
-              >
+            <q-btn
+              flat
+              round
+              dense
+              icon="visibility"
+              color="grey-7"
+              @click="viewDetails(props.row)"
+            >
               <q-tooltip>Voir détails</q-tooltip>
             </q-btn>
             <q-btn flat round dense icon="edit" color="grey-7" @click="openDialog(props.row)">
@@ -141,7 +155,6 @@
         <q-card-section>
           <q-form @submit="onSubmit" class="q-gutter-md">
             <div class="row q-col-gutter-md">
-
               <div class="col-12 col-sm-4">
                 <q-input
                   v-model.number="form.exercice"
@@ -168,11 +181,13 @@
               <div class="col-12 col-sm-4">
                 <q-input
                   :model-value="form.date ? new Date(form.date).toISOString().split('T')[0] : ''"
-                  @update:model-value="(val: string | number | null) => {
-                    if (val && typeof val === 'string') {
-                      form.date = new Date(val);
+                  @update:model-value="
+                    (val: string | number | null) => {
+                      if (val && typeof val === 'string') {
+                        form.date = new Date(val);
+                      }
                     }
-                  }"
+                  "
                   filled
                   type="date"
                   label="Date d'opération *"
@@ -229,7 +244,6 @@
 
               <!-- Exercice (Année) -->
 
-
               <!-- Commentaires -->
               <div class="col-12">
                 <q-input
@@ -257,6 +271,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db, type Remise, type Timbres, type Quotite } from 'src/database/db';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 
@@ -288,12 +303,28 @@ const form = ref<Partial<Remise>>({
 
 const columns = [
   { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
-  { name: 'exercice', label: 'Exercice', field: 'exercice', align: 'center' as const, sortable: true },
-  { name: 'numeroRemise', label: 'N° Remise', field: 'numeroRemise', align: 'left' as const, sortable: true },
+  {
+    name: 'exercice',
+    label: 'Exercice',
+    field: 'exercice',
+    align: 'center' as const,
+    sortable: true,
+  },
+  {
+    name: 'numeroRemise',
+    label: 'N° Remise',
+    field: 'numeroRemise',
+    align: 'left' as const,
+    sortable: true,
+  },
   { name: 'details', label: 'Détails', field: 'timbres', align: 'left' as const },
   { name: 'total', label: 'Total', field: 'total', align: 'right' as const, sortable: true },
   { name: 'actions', label: 'Actions', field: 'actions', align: 'center' as const },
 ];
+
+function exportCsv() {
+  exportToCsv(filteredRemises.value as Record<string, unknown>[], columns, 'remises');
+}
 
 // Charger les données depuis la base
 async function loadData() {

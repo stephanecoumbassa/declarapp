@@ -1,6 +1,14 @@
 <template>
   <q-btn-dropdown color="primary" icon="download" label="Exporter">
     <q-list>
+      <q-item clickable v-close-popup @click="$emit('export-csv')">
+        <q-item-section avatar>
+          <q-icon name="description" color="blue" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>Exporter en CSV</q-item-label>
+        </q-item-section>
+      </q-item>
       <q-item clickable v-close-popup @click="$emit('export-pdf')">
         <q-item-section avatar>
           <q-icon name="picture_as_pdf" color="red" />
@@ -23,6 +31,7 @@
 
 <script setup lang="ts">
 defineEmits<{
+  'export-csv': [];
   'export-pdf': [];
   'export-excel': [];
 }>();

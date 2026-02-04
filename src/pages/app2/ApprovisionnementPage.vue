@@ -6,11 +6,18 @@
         <div class="text-caption text-grey-7 q-mt-xs">
           <q-icon name="info" size="16px" color="grey-7" />
           L'imprimerie envoie des valeurs au trésor
-          <span class="text-positive text-weight-bold">(+ Augmente le stock du trésor - Section 1)</span>
+          <span class="text-positive text-weight-bold"
+            >(+ Augmente le stock du trésor - Section 1)</span
+          >
         </div>
       </div>
       <div class="col-auto">
-        <q-btn color="primary" icon="add_box" label="Nouvel Approvisionnement" @click="openDialog()" />
+        <q-btn
+          color="primary"
+          icon="add_box"
+          label="Nouvel Approvisionnement"
+          @click="openDialog()"
+        />
       </div>
     </div>
 
@@ -44,6 +51,18 @@
 
     <!-- Table des approvisionnements -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredAppros"
         :columns="columns"
@@ -54,11 +73,13 @@
       >
         <template v-slot:body-cell-date="props">
           <q-td :props="props">
-            {{ new Date(props.row.date).toLocaleDateString('fr-FR', {
-              year: 'numeric',
-              month: '2-digit',
-              day: '2-digit'
-            }) }}
+            {{
+              new Date(props.row.date).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              })
+            }}
           </q-td>
         </template>
 
@@ -135,8 +156,6 @@
         <q-card-section>
           <q-form @submit="onSubmit" class="q-gutter-md">
             <div class="row q-col-gutter-md">
-
-
               <div class="col-12 col-sm-4">
                 <q-input
                   v-model.number="form.exercice"
@@ -162,11 +181,13 @@
               <div class="col-12 col-sm-4">
                 <q-input
                   :model-value="form.date ? new Date(form.date).toISOString().split('T')[0] : ''"
-                  @update:model-value="(val: string | number | null) => {
-                    if (val && typeof val === 'string') {
-                      form.date = new Date(val);
+                  @update:model-value="
+                    (val: string | number | null) => {
+                      if (val && typeof val === 'string') {
+                        form.date = new Date(val);
+                      }
                     }
-                  }"
+                  "
                   filled
                   type="date"
                   label="Date d'opération *"
@@ -218,8 +239,6 @@
                 </q-card>
               </div>
 
-
-
               <!-- Observations -->
               <div class="col-12">
                 <q-input
@@ -247,6 +266,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db, type Approvisionnement, type Timbres, type Quotite } from 'src/database/db';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 
@@ -326,6 +346,10 @@ const filteredAppros = computed(() => {
 
   return result;
 });
+
+function exportCsv() {
+  exportToCsv(filteredAppros.value as Record<string, unknown>[], columns, 'approvisionnements');
+}
 
 const formatMontant = (montant: number) => {
   return new Intl.NumberFormat('fr-FR', {

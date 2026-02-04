@@ -18,6 +18,18 @@
 
     <!-- Table des mairies -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredMairies"
         :columns="columns"
@@ -130,6 +142,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db, type Mairie } from 'src/database/db';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 
@@ -169,6 +182,10 @@ const filteredMairies = computed(() => {
       m.ville.toLowerCase().includes(searchLower),
   );
 });
+
+function exportCsv() {
+  exportToCsv(filteredMairies.value as Record<string, unknown>[], columns, 'mairies');
+}
 
 async function loadMairies() {
   loading.value = true;

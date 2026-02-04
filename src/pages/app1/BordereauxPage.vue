@@ -26,6 +26,8 @@
       show-view
       show-print
       show-download
+      show-export-csv
+      export-filename="bordereaux"
       @view="viewDeclarations"
       @print="printBordereau"
       @download="downloadBordereauPDF"

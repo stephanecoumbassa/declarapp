@@ -48,6 +48,18 @@
 
     <!-- Table des utilisateurs -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredUtilisateurs"
         :columns="columns"
@@ -58,11 +70,7 @@
       >
         <template v-slot:body-cell-role="props">
           <q-td :props="props">
-            <q-chip
-              :color="'accent'"
-              text-color="grey-9"
-              size="sm"
-            >
+            <q-chip :color="'accent'" text-color="grey-9" size="sm">
               {{ getRoleLabel(props.row.role) }}
             </q-chip>
           </q-td>
@@ -70,11 +78,7 @@
 
         <template v-slot:body-cell-actif="props">
           <q-td :props="props">
-            <q-chip
-              :color="props.row.actif ? 'positive' : 'grey'"
-              text-color="white"
-              size="sm"
-            >
+            <q-chip :color="props.row.actif ? 'positive' : 'grey'" text-color="white" size="sm">
               {{ props.row.actif ? 'Actif' : 'Inactif' }}
             </q-chip>
           </q-td>
@@ -88,24 +92,10 @@
 
         <template v-slot:body-cell-actions="props">
           <q-td :props="props">
-            <q-btn
-              flat
-              round
-              dense
-              icon="edit"
-              color="grey-7"
-              @click="openDialog(props.row)"
-            >
+            <q-btn flat round dense icon="edit" color="grey-7" @click="openDialog(props.row)">
               <q-tooltip>Modifier</q-tooltip>
             </q-btn>
-            <q-btn
-              flat
-              round
-              dense
-              icon="vpn_key"
-              color="grey-7"
-              @click="resetPassword(props.row)"
-            >
+            <q-btn flat round dense icon="vpn_key" color="grey-7" @click="resetPassword(props.row)">
               <q-tooltip>Réinitialiser mot de passe</q-tooltip>
             </q-btn>
             <q-btn
@@ -140,7 +130,7 @@
                   filled
                   label="Nom d'utilisateur *"
                   lazy-rules
-                  :rules="[val => !!val || 'Le nom d\'utilisateur est requis']"
+                  :rules="[(val) => !!val || 'Le nom d\'utilisateur est requis']"
                   :disable="isEditing"
                 />
               </div>
@@ -153,8 +143,8 @@
                   label="Mot de passe *"
                   lazy-rules
                   :rules="[
-                    val => !!val || 'Le mot de passe est requis',
-                    val => val.length >= 6 || 'Au moins 6 caractères'
+                    (val) => !!val || 'Le mot de passe est requis',
+                    (val) => val.length >= 6 || 'Au moins 6 caractères',
                   ]"
                 />
               </div>
@@ -165,7 +155,7 @@
                   filled
                   label="Nom *"
                   lazy-rules
-                  :rules="[val => !!val || 'Le nom est requis']"
+                  :rules="[(val) => !!val || 'Le nom est requis']"
                 />
               </div>
 
@@ -175,7 +165,7 @@
                   filled
                   label="Prénom *"
                   lazy-rules
-                  :rules="[val => !!val || 'Le prénom est requis']"
+                  :rules="[(val) => !!val || 'Le prénom est requis']"
                 />
               </div>
 
@@ -187,8 +177,8 @@
                   label="Email *"
                   lazy-rules
                   :rules="[
-                    val => !!val || 'L\'email est requis',
-                    val => /.+@.+\..+/.test(val) || 'Email invalide'
+                    (val) => !!val || 'L\'email est requis',
+                    (val) => /.+@.+\..+/.test(val) || 'Email invalide',
                   ]"
                 />
               </div>
@@ -199,7 +189,7 @@
                   filled
                   :options="roleOptions"
                   label="Rôle *"
-                  :rules="[val => !!val || 'Le rôle est requis']"
+                  :rules="[(val) => !!val || 'Le rôle est requis']"
                 />
               </div>
 
@@ -218,11 +208,7 @@
               </div>
 
               <div class="col-12">
-                <q-toggle
-                  v-model="form.actif"
-                  label="Utilisateur actif"
-                  color="green"
-                />
+                <q-toggle v-model="form.actif" label="Utilisateur actif" color="green" />
               </div>
 
               <div class="col-12">
@@ -231,8 +217,8 @@
                     <q-icon name="info" />
                   </template>
                   <div class="text-caption">
-                    <strong>Admin :</strong> Accès complet<br>
-                    <strong>Gestionnaire :</strong> Gestion des données<br>
+                    <strong>Admin :</strong> Accès complet<br />
+                    <strong>Gestionnaire :</strong> Gestion des données<br />
                     <strong>Opérateur :</strong> Saisie uniquement
                   </div>
                 </q-banner>
@@ -243,12 +229,7 @@
 
         <q-card-actions align="right">
           <q-btn flat label="Annuler" color="grey" v-close-popup />
-          <q-btn
-            label="Enregistrer"
-            color="primary"
-            @click="onSubmit"
-            :loading="saving"
-          />
+          <q-btn label="Enregistrer" color="primary" @click="onSubmit" :loading="saving" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -260,6 +241,7 @@ import { ref, computed, onMounted } from 'vue';
 import { useQuasar, date } from 'quasar';
 import { db, type Utilisateur, type Mairie } from 'src/database/db';
 import { useAuthStore } from 'src/stores/auth-store';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 const authStore = useAuthStore();
@@ -288,40 +270,49 @@ const form = ref<Partial<Utilisateur>>({
 });
 
 const columns = [
-  { name: 'username', label: 'Username', field: 'username', align: 'left' as const, sortable: true },
+  {
+    name: 'username',
+    label: 'Username',
+    field: 'username',
+    align: 'left' as const,
+    sortable: true,
+  },
   { name: 'nom', label: 'Nom', field: 'nom', align: 'left' as const, sortable: true },
   { name: 'prenom', label: 'Prénom', field: 'prenom', align: 'left' as const, sortable: true },
   { name: 'email', label: 'Email', field: 'email', align: 'left' as const },
   { name: 'role', label: 'Rôle', field: 'role', align: 'center' as const, sortable: true },
   { name: 'actif', label: 'Statut', field: 'actif', align: 'center' as const, sortable: true },
-  { name: 'derniereConnexion', label: 'Dernière Connexion', field: 'derniereConnexion', align: 'left' as const },
+  {
+    name: 'derniereConnexion',
+    label: 'Dernière Connexion',
+    field: 'derniereConnexion',
+    align: 'left' as const,
+  },
   { name: 'actions', label: 'Actions', field: 'actions', align: 'center' as const },
 ];
 
-const mairieOptions = computed(() =>
-  mairies.value.map(m => ({ label: m.nom, value: m.id! }))
-);
+const mairieOptions = computed(() => mairies.value.map((m) => ({ label: m.nom, value: m.id! })));
 
 const filteredUtilisateurs = computed(() => {
   let result = utilisateurs.value;
 
   if (filterRole.value) {
-    result = result.filter(u => u.role === filterRole.value);
+    result = result.filter((u) => u.role === filterRole.value);
   }
 
   if (filterActif.value) {
     const isActif = filterActif.value === 'Actif';
-    result = result.filter(u => u.actif === isActif);
+    result = result.filter((u) => u.actif === isActif);
   }
 
   if (search.value) {
     const searchLower = search.value.toLowerCase();
     result = result.filter(
-      u =>
+      (u) =>
         u.username.toLowerCase().includes(searchLower) ||
         u.nom.toLowerCase().includes(searchLower) ||
         u.prenom.toLowerCase().includes(searchLower) ||
-        u.email.toLowerCase().includes(searchLower)
+        u.email.toLowerCase().includes(searchLower),
     );
   }
 
@@ -335,6 +326,10 @@ function getRoleLabel(role: string): string {
     operateur: 'Opérateur',
   };
   return labels[role] || role;
+}
+
+function exportCsv() {
+  exportToCsv(filteredUtilisateurs.value as Record<string, unknown>[], columns, 'utilisateurs');
 }
 
 //
@@ -396,7 +391,7 @@ async function onSubmit() {
         nom: form.value.nom!,
         prenom: form.value.prenom!,
         email: form.value.email!,
-        role: (form.value.role || 'operateur'),
+        role: form.value.role || 'operateur',
         actif: form.value.actif ?? true,
         createdAt: now,
         updatedAt: now,
@@ -414,7 +409,7 @@ async function onSubmit() {
     await loadData();
   } catch (error) {
     console.error('Erreur:', error);
-    $q.notify({ type: 'negative', message: 'Erreur lors de l\'enregistrement' });
+    $q.notify({ type: 'negative', message: "Erreur lors de l'enregistrement" });
   } finally {
     saving.value = false;
   }

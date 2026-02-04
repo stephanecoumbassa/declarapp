@@ -42,6 +42,18 @@
 
     <!-- Table des taxes -->
     <q-card>
+      <q-card-section class="q-pb-none">
+        <div class="row justify-end">
+          <q-btn
+            flat
+            color="primary"
+            icon="download"
+            label="Exporter CSV"
+            @click="exportCsv"
+            no-caps
+          />
+        </div>
+      </q-card-section>
       <q-table
         :rows="filteredTaxes"
         :columns="columns"
@@ -206,6 +218,7 @@
 import { ref, computed, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db, type Taxe, DEFAULT_MAIRIE_ID } from 'src/database/db';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const $q = useQuasar();
 
@@ -277,6 +290,10 @@ function formatMontant(montant: number): string {
     currency: 'XOF',
     minimumFractionDigits: 0,
   }).format(montant);
+}
+
+function exportCsv() {
+  exportToCsv(filteredTaxes.value as Record<string, unknown>[], columns, 'taxes');
 }
 
 async function loadData() {
