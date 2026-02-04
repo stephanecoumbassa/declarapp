@@ -4,10 +4,11 @@
       <div class="col">
         <div class="text-h6">
           <q-icon name="swap_horiz" color="primary" class="q-mr-sm" />
-          Section II - Timbres (BE - Versement + Remise)
+          Section II - Timbres (BE - Versement + Appro)
         </div>
       </div>
-      <div class="col-auto no-print">
+      <div class="col-auto no-print row q-gutter-sm">
+        <q-btn color="secondary" label="CSV" icon="download" @click="exportCsv" flat dense />
         <q-btn color="primary" label="Imprimer" icon="print" @click="$emit('print')" flat dense />
       </div>
     </div>
@@ -35,7 +36,7 @@
             :color="
               props.row.type === 'BE-S2' || props.row.type === 'Stock initial'
                 ? 'info'
-                : props.row.type === 'Remise'
+                : props.row.type === 'Appro'
                   ? 'positive'
                   : props.row.type === 'Versement'
                     ? 'negative'
@@ -45,8 +46,6 @@
           />
         </q-td>
       </template>
-
-      
 
       <template v-slot:body-cell-remise="props">
         <q-td :props="props">
@@ -77,6 +76,7 @@
 
 <script setup lang="ts">
 import type { SectionIIEntry } from '../types';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const props = defineProps<{
   data: SectionIIEntry[];
@@ -116,12 +116,22 @@ const columns = (() => {
     sortable: true,
   }));
   const tail = [
-    { name: 'remise', label: 'Remise', field: 'remise', align: 'right' as const, sortable: true },
-    { name: 'versement', label: 'Versement', field: 'versement', align: 'right' as const, sortable: true },
+    { name: 'remise', label: 'Appro', field: 'remise', align: 'right' as const, sortable: true },
+    {
+      name: 'versement',
+      label: 'Versement',
+      field: 'versement',
+      align: 'right' as const,
+      sortable: true,
+    },
     { name: 'solde', label: 'Solde', field: 'solde', align: 'right' as const, sortable: true },
   ];
   return [...base, ...priceCols, ...tail];
 })();
+
+function exportCsv() {
+  exportToCsv(props.data, columns, 'section2-timbres-fiscaux');
+}
 </script>
 
 <style scoped lang="scss">

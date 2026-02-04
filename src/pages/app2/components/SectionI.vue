@@ -7,7 +7,8 @@
           Section I - Timbres Fiscaux (Balance d'entrée + Remises)
         </div>
       </div>
-      <div class="col-auto no-print">
+      <div class="col-auto no-print row q-gutter-sm">
+        <q-btn color="secondary" label="CSV" icon="download" @click="exportCsv" flat dense />
         <q-btn color="primary" label="Imprimer" icon="print" @click="$emit('print')" flat dense />
       </div>
     </div>
@@ -44,8 +45,6 @@
         </q-td>
       </template>
 
-      
-
       <template v-slot:body-cell-approv="props">
         <q-td :props="props">
           <div v-if="props.row.approvisionnement" class="text-info text-weight-bold">
@@ -75,6 +74,7 @@
 
 <script setup lang="ts">
 import type { SectionIEntry } from '../types';
+import { exportToCsv } from 'src/utils/exportCsv';
 
 const props = defineProps<{
   data: SectionIEntry[];
@@ -114,12 +114,22 @@ const columns = (() => {
     sortable: true,
   }));
   const tail = [
-    { name: 'approv', label: 'Approv', field: 'approvisionnement', align: 'right' as const, sortable: true },
+    {
+      name: 'approv',
+      label: 'Approv',
+      field: 'approvisionnement',
+      align: 'right' as const,
+      sortable: true,
+    },
     { name: 'remise', label: 'Remise', field: 'remise', align: 'right' as const, sortable: true },
     { name: 'solde', label: 'Solde', field: 'solde', align: 'right' as const, sortable: true },
   ];
   return [...base, ...priceCols, ...tail];
 })();
+
+function exportCsv() {
+  exportToCsv(props.data, columns, 'section1-timbres-fiscaux');
+}
 </script>
 
 <style scoped lang="scss">

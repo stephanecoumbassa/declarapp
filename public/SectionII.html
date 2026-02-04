@@ -153,7 +153,7 @@
       function renderHead(columns, labels) {
         const head = document.getElementById('head-row');
         const base = ['Date', 'Type'];
-        const tail = ['Remise', 'Versement', 'Solde'];
+        const tail = ['Entrée', 'Sortie', 'Solde'];
         const cols = base
           .concat(columns.map((c) => (labels && labels[c] ? labels[c] : String(c))))
           .concat(tail);
@@ -190,15 +190,15 @@
             let val = 0;
             if (row.detailsQuotites && row.detailsQuotites[d] != null) {
               val = row.detailsQuotites[d];
-            } else if (row.denominations) {
+            } else if (row.denominations || row.timbres) {
               const price = parseInt(String(d).split('-')[0], 10);
-              val = row.denominations[price] || 0;
+              val = (row.denominations || row.timbres)[price] || 0;
             }
             td.textContent = formatNumber(val);
             tr.appendChild(td);
           });
 
-          // Remise
+          // Appro
           const tdRemise = document.createElement('td');
           tdRemise.className = 'amount';
           tdRemise.textContent = formatMontant(row.remise);

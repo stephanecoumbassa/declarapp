@@ -296,6 +296,131 @@
 
         <q-separator class="q-my-md" />
 
+        <q-item-label header class="text-grey-7 text-weight-medium q-px-md">
+          <q-icon name="local_post_office" size="18px" class="q-mr-xs" />
+          Gestion des Timbres
+        </q-item-label>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/dashboard"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="dashboard" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Dashboard Timbres</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/sections"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="folder_open" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Sections</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/balance-entree"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="balance" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Balance d'Entrée</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/approvisionnements"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="inventory" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Approvisionnements</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/remises"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="local_shipping" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Remises</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/versements"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="upload" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Versements</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/statistiques"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="bar_chart" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Statistiques</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/quotites"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="toll" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Quotités</q-item-label>
+          </q-item-section>
+        </q-item>
+
         <template v-if="authStore.isAdmin">
           <q-separator class="q-my-md" />
 

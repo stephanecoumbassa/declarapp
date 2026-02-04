@@ -3,7 +3,7 @@ import type { QTableColumn } from 'quasar';
 /**
  * Exporte des données en CSV et déclenche le téléchargement
  */
-export function exportToCsv<T extends Record<string, unknown>>(
+export function exportToCsv<T>(
   rows: T[],
   columns: QTableColumn[],
   filename: string = 'export',
@@ -21,14 +21,15 @@ export function exportToCsv<T extends Record<string, unknown>>(
     return exportableColumns
       .map((col) => {
         let value: unknown;
+        const rowObj = row as Record<string, unknown>;
 
         // Récupérer la valeur selon le type de field
         if (typeof col.field === 'function') {
           value = col.field(row);
         } else if (col.field) {
-          value = row[col.field];
+          value = rowObj[col.field];
         } else {
-          value = row[col.name];
+          value = rowObj[col.name];
         }
 
         // Formater la valeur pour CSV

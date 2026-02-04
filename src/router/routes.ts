@@ -113,6 +113,47 @@ const routes: RouteRecordRaw[] = [
         component: () => import('pages/app2/QuotitesPage.vue'),
         name: 'app2-quotites',
       },
+      // Routes App3 - Gestion des Timbres
+      {
+        path: 'app3/dashboard',
+        component: () => import('pages/app3/DashboardPage.vue'),
+        name: 'app3-dashboard',
+      },
+      {
+        path: 'app3/approvisionnements',
+        component: () => import('pages/app3/ApprovisionnementPage.vue'),
+        name: 'app3-approvisionnements',
+      },
+      {
+        path: 'app3/remises',
+        component: () => import('pages/app3/RemisesPage.vue'),
+        name: 'app3-remises',
+      },
+      {
+        path: 'app3/versements',
+        component: () => import('pages/app3/VersementsPage.vue'),
+        name: 'app3-versements',
+      },
+      {
+        path: 'app3/balance-entree',
+        component: () => import('pages/app3/BalanceEntreePage.vue'),
+        name: 'app3-balance-entree',
+      },
+      {
+        path: 'app3/statistiques',
+        component: () => import('pages/app3/StatistiquesPage.vue'),
+        name: 'app3-statistiques',
+      },
+      {
+        path: 'app3/sections',
+        component: () => import('pages/app3/SectionPage.vue'),
+        name: 'app3-sections',
+      },
+      {
+        path: 'app3/quotites',
+        component: () => import('pages/app3/QuotitesPage.vue'),
+        name: 'app3-quotites',
+      },
     ],
   },
 

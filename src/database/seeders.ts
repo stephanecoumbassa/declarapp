@@ -1,4 +1,4 @@
-﻿import { db, DEFAULT_MAIRIE_ID, type Quotite } from './db';
+﻿import { db, DEFAULT_MAIRIE_ID, type Quotite, type TimbresQuotite } from './db';
 import type {
   Declaration,
   BordereauRecette,
@@ -10,6 +10,11 @@ import type {
   Prevision,
   Mandat,
   BordereauMandat,
+  TimbresValeurs,
+  TimbresApprovisionnement,
+  TimbresRemise,
+  TimbresVersement,
+  TimbresBalanceEntree,
 } from './db';
 
 // =================================================================
@@ -1237,7 +1242,7 @@ export async function seedTestData(options: SeedOptions = {}) {
     approvisionnements = 30,
     remises = 30,
     versements = 30,
-    balancesEntree = 9,
+    balancesEntree = 3,
     previsions = 30,
     mandats = 200,
     bordereauMandats = 20,
@@ -1301,6 +1306,10 @@ export async function seedTestData(options: SeedOptions = {}) {
       mandats,
     );
 
+    // ========== App3 - Timbres ==========
+    console.log('\n🌱 Seeding App3 Timbres data...');
+    await seedTimbresTestData();
+
     console.log('\nâœ¨ All test data seeders have been executed successfully!');
   } catch (error) {
     console.error('âŒ Error during test data seeding:', error);
@@ -1333,6 +1342,12 @@ export async function clearDatabase() {
     db.previsions.clear(),
     db.mandats.clear(),
     db.bordereauMandats.clear(),
+    // App3 - Timbres
+    db.timbresApprovisionnements.clear(),
+    db.timbresRemises.clear(),
+    db.timbresVersements.clear(),
+    db.timbresBalancesEntree.clear(),
+    db.timbresQuotites.clear(),
   ]);
   console.log('âœ… All tables cleared.');
 }
@@ -1683,21 +1698,19 @@ export async function seedVersements(personnelIds: number[], count: number = 60)
   return versements;
 }
 
-export async function seedBalancesEntree(personnelIds: number[], count: number = 5) {
-  console.log(`ðŸŒ± Seeding ${count} balances d'entrÃ©e...`);
+export async function seedBalancesEntree(personnelIds: number[], count: number = 3) {
+  console.log(`🌱 Seeding ${count} balances d'entrée...`);
 
   const balances: Partial<BalanceEntree>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercice = 2026;
+  const types = ['BE-S1', 'BE-S2', 'BE-S3'];
 
-  for (let i = 0; i < count; i++) {
-    const exercice = randomChoice(exercices);
+  for (let i = 0; i < Math.min(count, types.length); i++) {
+    const type = types[i]!;
     const date = new Date(exercice, 0, 1); // 1er janvier de l'exercice
 
-    const types = ['BE-S1', 'BE-S2', 'BE-S3'];
-    const type = types[i % types.length]!;
-
-    // GÃ©nÃ©rer des quantitÃ©s alÃ©atoires pour le stock initial
+    // Générer des quantités aléatoires pour le stock initial
     const timbres: Timbres = {
       100: randomAmount(500, 2000),
       200: randomAmount(400, 1500),
@@ -1724,7 +1737,7 @@ export async function seedBalancesEntree(personnelIds: number[], count: number =
       timbres,
       detailsQuotites: await buildDetailsQuotitesFromTimbres(timbres),
       total,
-      commentaires: `Stock initial de l'exercice ${exercice}`,
+      commentaires: `Stock initial ${type} de l'exercice ${exercice}`,
       personnelId: randomChoice(personnelIds),
       createdAt: date,
       updatedAt: now,
@@ -1734,7 +1747,7 @@ export async function seedBalancesEntree(personnelIds: number[], count: number =
   }
 
   await db.balancesEntree.bulkAdd(balances as unknown as BalanceEntree[]);
-  console.log(`âœ… ${count} balances d'entrÃ©e crÃ©Ã©es`);
+  console.log(`✅ ${balances.length} balances d'entrée créées (BE-S1, BE-S2, BE-S3 pour 2026)`);
   return balances;
 }
 
@@ -2078,3 +2091,358 @@ export async function seedQuotites(count: number = 10) {
   return quotites;
 }
 
+// =================================================================
+//                      SEEDERS APP3 - TIMBRES
+// =================================================================
+
+/**
+ * Construire un objet detailsQuotites à partir d'un objet timbres pour App3.
+ * Répartit les quantités par valeur entre les quotités actives de même prix.
+ */
+async function buildDetailsQuotitesFromTimbresApp3(timbres: Record<number, number>) {
+  const result: Record<string, number> = {};
+  const quotites = await db.timbresQuotites.filter((q) => q.actif).toArray();
+  const byPrix = new Map<number, typeof quotites>();
+  for (const q of quotites) {
+    const list = byPrix.get(q.prix) || [];
+    list.push(q);
+    byPrix.set(q.prix, list);
+  }
+
+  for (const prixKey of Object.keys(timbres)) {
+    const prix = Number(prixKey);
+    const total = Number(timbres[prix]) || 0;
+    const list = byPrix.get(prix) || [];
+    if (list.length === 0) continue;
+    const base = Math.floor(total / list.length);
+    let remainder = total - base * list.length;
+    for (let i = 0; i < list.length; i++) {
+      const q = list[i];
+      if (!q) continue;
+      const add = base + (remainder > 0 ? 1 : 0);
+      if (remainder > 0) remainder--;
+      result[`${prix}-${q.code}`] = add;
+    }
+  }
+
+  return result;
+}
+
+export async function seedTimbresQuotites(count: number = 6) {
+  console.log(`🌱 Seeding ${count} quotités timbres (App3)...`);
+
+  const quotites: Partial<TimbresQuotite>[] = [];
+  const now = new Date();
+  // Prix obligatoires pour correspondre aux timbres App3 (500, 1000, 3000)
+  const requiredPrices = [500, 1000, 3000];
+
+  // D'abord, créer une quotité pour chaque prix obligatoire avec type Fiscal
+  for (const prix of requiredPrices) {
+    const code = `TF${prix}`;
+    const quotite: Partial<TimbresQuotite> = {
+      code,
+      prix,
+      description: 'Timbre fiscal',
+      type: 'Fiscal',
+      mairieId: DEFAULT_MAIRIE_ID,
+      actif: true,
+      createdAt: randomDate(new Date(2023, 0, 1), now),
+      updatedAt: now,
+    };
+    quotites.push(quotite);
+  }
+
+  // Ensuite, créer une quotité pour chaque prix avec type Administratif
+  for (const prix of requiredPrices) {
+    const code = `TA${prix}`;
+    const quotite: Partial<TimbresQuotite> = {
+      code,
+      prix,
+      description: 'Timbre administratif',
+      type: 'Administratif',
+      mairieId: DEFAULT_MAIRIE_ID,
+      actif: true,
+      createdAt: randomDate(new Date(2023, 0, 1), now),
+      updatedAt: now,
+    };
+    quotites.push(quotite);
+  }
+
+  await db.timbresQuotites.bulkAdd(quotites as TimbresQuotite[]);
+  console.log(`✅ ${quotites.length} quotités timbres créées`);
+  return quotites;
+}
+
+export async function seedTimbresApprovisionnements(personnelIds: number[], count: number = 20) {
+  console.log(`🌱 Seeding ${count} approvisionnements timbres (App3)...`);
+
+  const approvisionnements: Partial<TimbresApprovisionnement>[] = [];
+  const now = new Date();
+  const exercices = [2024, 2025, 2026];
+
+  for (let i = 0; i < count; i++) {
+    const exercice = randomChoice(exercices);
+    const date = randomDate(
+      new Date(exercice, 0, 1),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
+    );
+    const type = 'appro';
+    // Générer des quantités aléatoires pour chaque valeur de timbre (500, 1000, 3000)
+    const timbres: TimbresValeurs = {
+      500: randomAmount(50, 500),
+      1000: randomAmount(30, 300),
+      3000: randomAmount(10, 100),
+    };
+
+    // Calculer le total
+    const total = timbres[500] * 500 + timbres[1000] * 1000 + timbres[3000] * 3000;
+
+    const obs =
+      Math.random() > 0.7 ? `Approvisionnement ${type} de l'exercice ${exercice}` : undefined;
+
+    const approvisionnement: Partial<TimbresApprovisionnement> = {
+      mairieId: DEFAULT_MAIRIE_ID,
+      exercice,
+      date,
+      type,
+      timbres,
+      detailsQuotites: await buildDetailsQuotitesFromTimbresApp3(timbres),
+      total,
+      personnelId: randomChoice(personnelIds),
+      createdAt: date,
+      updatedAt: now,
+    };
+
+    if (obs) {
+      approvisionnement.observations = obs;
+    }
+
+    approvisionnements.push(approvisionnement);
+  }
+
+  await db.timbresApprovisionnements.bulkAdd(
+    approvisionnements as unknown as TimbresApprovisionnement[],
+  );
+  console.log(`✅ ${count} approvisionnements timbres créés`);
+  return approvisionnements;
+}
+
+export async function seedTimbresRemises(personnelIds: number[], count: number = 30) {
+  console.log(`🌱 Seeding ${count} remises timbres (App3)...`);
+
+  const remises: Partial<TimbresRemise>[] = [];
+  const now = new Date();
+  const exercices = [2024, 2025, 2026];
+
+  for (let i = 0; i < count; i++) {
+    const exercice = randomChoice(exercices);
+    const date = randomDate(
+      new Date(exercice, 0, 1),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
+    );
+    const numeroRemise = `TREM-${exercice}-${String(i + 1).padStart(4, '0')}`;
+
+    // Générer des quantités aléatoires pour chaque valeur de timbre
+    const timbres: TimbresValeurs = {
+      500: randomAmount(20, 200),
+      1000: randomAmount(15, 150),
+      3000: randomAmount(5, 50),
+    };
+
+    // Calculer le total
+    const total = timbres[500] * 500 + timbres[1000] * 1000 + timbres[3000] * 3000;
+
+    const obs = Math.random() > 0.6 ? `Remise de timbres` : undefined;
+
+    const remise: Partial<TimbresRemise> = {
+      mairieId: DEFAULT_MAIRIE_ID,
+      exercice,
+      date,
+      type: 'remise',
+      numeroRemise,
+      timbres,
+      detailsQuotites: await buildDetailsQuotitesFromTimbresApp3(timbres),
+      total,
+      personnelId: randomChoice(personnelIds),
+      createdAt: date,
+      updatedAt: now,
+    };
+
+    if (obs) {
+      remise.observations = obs;
+    }
+
+    remises.push(remise);
+  }
+
+  await db.timbresRemises.bulkAdd(remises as unknown as TimbresRemise[]);
+  console.log(`✅ ${count} remises timbres créées`);
+  return remises;
+}
+
+export async function seedTimbresVersements(personnelIds: number[], count: number = 40) {
+  console.log(`🌱 Seeding ${count} versements timbres (App3)...`);
+
+  const versements: Partial<TimbresVersement>[] = [];
+  const now = new Date();
+  const exercices = [2024, 2025, 2026];
+
+  for (let i = 0; i < count; i++) {
+    const exercice = randomChoice(exercices);
+    const date = randomDate(
+      new Date(exercice, 0, 1),
+      exercice === 2026 ? now : new Date(exercice, 11, 31),
+    );
+    const numeroVersement = `TVER-${exercice}-${String(i + 1).padStart(4, '0')}`;
+
+    // Générer des quantités aléatoires pour chaque valeur de timbre (vendus)
+    const timbres: TimbresValeurs = {
+      500: randomAmount(10, 100),
+      1000: randomAmount(8, 80),
+      3000: randomAmount(2, 20),
+    };
+
+    // Calculer le total
+    const total = timbres[500] * 500 + timbres[1000] * 1000 + timbres[3000] * 3000;
+
+    const obs = Math.random() > 0.7 ? `Versement journalier` : undefined;
+
+    const versement: Partial<TimbresVersement> = {
+      mairieId: DEFAULT_MAIRIE_ID,
+      exercice,
+      date,
+      numeroVersement,
+      timbres,
+      detailsQuotites: await buildDetailsQuotitesFromTimbresApp3(timbres),
+      total,
+      personnelId: randomChoice(personnelIds),
+      createdAt: date,
+      updatedAt: now,
+    };
+
+    if (obs) {
+      versement.observations = obs;
+    }
+
+    versements.push(versement);
+  }
+
+  await db.timbresVersements.bulkAdd(versements as unknown as TimbresVersement[]);
+  console.log(`✅ ${count} versements timbres créés`);
+  return versements;
+}
+
+export async function seedTimbresBalancesEntree(personnelIds: number[], count: number = 3) {
+  console.log(`🌱 Seeding ${count} balances d'entrée timbres (App3)...`);
+
+  const balances: Partial<TimbresBalanceEntree>[] = [];
+  const now = new Date();
+  const exercice = 2026;
+  const types = ['BE-S1', 'BE-S2', 'BE-S3'];
+
+  for (let i = 0; i < Math.min(count, types.length); i++) {
+    const type = types[i]!;
+    const date = new Date(exercice, 0, 1); // 1er janvier de l'exercice
+
+    // Générer des quantités aléatoires pour le stock initial
+    const timbres: TimbresValeurs = {
+      500: randomAmount(200, 1000),
+      1000: randomAmount(150, 800),
+      3000: randomAmount(50, 300),
+    };
+
+    // Calculer le total
+    const total = timbres[500] * 500 + timbres[1000] * 1000 + timbres[3000] * 3000;
+
+    const balance: Partial<TimbresBalanceEntree> = {
+      mairieId: DEFAULT_MAIRIE_ID,
+      exercice,
+      date,
+      type,
+      timbres,
+      detailsQuotites: await buildDetailsQuotitesFromTimbresApp3(timbres),
+      total,
+      commentaires: `Stock initial ${type} de l'exercice ${exercice}`,
+      personnelId: randomChoice(personnelIds),
+      createdAt: date,
+      updatedAt: now,
+    };
+
+    balances.push(balance);
+  }
+
+  await db.timbresBalancesEntree.bulkAdd(balances as unknown as TimbresBalanceEntree[]);
+  console.log(
+    `✅ ${balances.length} balances d'entrée timbres créées (BE-S1, BE-S2, BE-S3 pour 2026)`,
+  );
+  return balances;
+}
+
+/**
+ * Options pour le seeder de données de test App3.
+ */
+export interface SeedTimbresOptions {
+  timbresQuotites?: number;
+  timbresApprovisionnements?: number;
+  timbresRemises?: number;
+  timbresVersements?: number;
+  timbresBalancesEntree?: number;
+}
+
+/**
+ * Remplit les tables App3 (Timbres) avec des données de test.
+ */
+export async function seedTimbresTestData(options: SeedTimbresOptions = {}) {
+  console.log('🚀 Starting App3 Timbres test data seeders...');
+
+  const {
+    timbresQuotites = 6,
+    timbresApprovisionnements = 20,
+    timbresRemises = 30,
+    timbresVersements = 40,
+    timbresBalancesEntree = 3,
+  } = options;
+
+  try {
+    const utilisateursCreated = await db.utilisateurs.toArray();
+    const utilisateurIds = utilisateursCreated.map((u) => u.id!);
+
+    if (utilisateurIds.length === 0) {
+      console.log('⚠️ No users found, creating admin user first...');
+      const now = new Date();
+      const userId = await db.utilisateurs.add({
+        username: 'admin',
+        password: 'admin123',
+        nom: 'Administrateur',
+        prenom: 'Système',
+        email: 'admin@tresor.sn',
+        role: 'admin',
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      });
+      utilisateurIds.push(userId as number);
+    }
+
+    // Seeding quotités AVANT les autres données
+    console.log(`🌱 Seeding ${timbresQuotites} test quotités timbres...`);
+    await seedTimbresQuotites(timbresQuotites);
+
+    console.log(`🌱 Seeding ${timbresBalancesEntree} test balances entrée timbres...`);
+    await seedTimbresBalancesEntree(utilisateurIds, timbresBalancesEntree);
+
+    console.log(`🌱 Seeding ${timbresApprovisionnements} test approvisionnements timbres...`);
+    await seedTimbresApprovisionnements(utilisateurIds, timbresApprovisionnements);
+
+    console.log(`🌱 Seeding ${timbresRemises} test remises timbres...`);
+    await seedTimbresRemises(utilisateurIds, timbresRemises);
+
+    console.log(`🌱 Seeding ${timbresVersements} test versements timbres...`);
+    await seedTimbresVersements(utilisateurIds, timbresVersements);
+
+    console.log('\n✨ All App3 Timbres test data seeders have been executed successfully!');
+  } catch (error) {
+    console.error('❌ Error during App3 Timbres test data seeding:', error);
+    throw error;
+  }
+}

@@ -136,7 +136,7 @@ const columns = (() => {
 })();
 
 function exportCsv() {
-  exportToCsv(props.data, columns, 'section3-timbres-fiscaux');
+  exportToCsv(props.data, columns, 'section3-timbres');
 }
 </script>
 

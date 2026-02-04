@@ -4,9 +4,9 @@
       <div class="col-12">
         <div class="row items-center justify-between q-mb-md">
           <div class="col">
-            <div class="text-h4">Sections de Trésorerie</div>
+            <div class="text-h4">Sections de Trésorerie - Timbres</div>
             <div class="text-subtitle1 text-grey-7">
-              Gestion des flux de trésorerie et des timbres fiscaux
+              Gestion des flux de trésorerie et des timbres
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
             align="justify"
             animated
           >
-            <q-tab name="section1" label="Section I - Timbres Fiscaux" icon="receipt" />
+            <q-tab name="section1" label="Section I - Timbres" icon="receipt" />
             <q-tab name="section2" label="Section II - Remises & Versements" icon="swap_horiz" />
             <q-tab name="section3" label="Section III - Versements" icon="payments" />
           </q-tabs>
@@ -120,7 +120,7 @@ import type {
   SectionIEntry,
   SectionIIEntry,
   SectionIIIEntry,
-  DenominationsType,
+  TimbresType,
   AnySectionEntry,
   RawSectionIEntry,
   RawSectionIIEntry,
@@ -159,13 +159,13 @@ const loadData = async () => {
     const mairieId = DEFAULT_MAIRIE_ID;
     const exercice = selectedExercice.value;
 
-    const balances = await db.balancesEntree.where({ exercice, mairieId }).toArray();
-    const remises = await db.remises.where('exercice').equals(exercice).toArray();
-    const approvisionnements = await db.approvisionnements
+    const balances = await db.timbresBalancesEntree.where({ exercice, mairieId }).toArray();
+    const remises = await db.timbresRemises.where('exercice').equals(exercice).toArray();
+    const approvisionnements = await db.timbresApprovisionnements
       .where('exercice')
       .equals(exercice)
       .toArray();
-    const versements = await db.versements.where('exercice').equals(exercice).toArray();
+    const versements = await db.timbresVersements.where('exercice').equals(exercice).toArray();
 
     const rawSectionI: RawSectionIEntry[] = [];
     const balancesBES1 = balances.filter(
@@ -176,7 +176,7 @@ const loadData = async () => {
         id: b.id!,
         date: b.date.toISOString(),
         type: b.type,
-        denominations: b.timbres,
+        timbres: b.timbres,
         approvisionnement: b.total,
       };
       const entry: RawSectionIEntry = b.detailsQuotites
@@ -189,7 +189,7 @@ const loadData = async () => {
         id: a.id!,
         date: a.date.toISOString(),
         type: 'Approvisionnement',
-        denominations: a.timbres,
+        timbres: a.timbres,
         approvisionnement: a.total,
       };
       const entry: RawSectionIEntry = a.detailsQuotites
@@ -202,7 +202,7 @@ const loadData = async () => {
         id: r.id!,
         date: r.date.toISOString(),
         type: 'Remise',
-        denominations: r.timbres,
+        timbres: r.timbres,
         remise: r.total,
       };
       const entry: RawSectionIEntry = r.detailsQuotites
@@ -225,7 +225,7 @@ const loadData = async () => {
         id: b.id!,
         date: b.date.toISOString(),
         type: b.type,
-        denominations: b.timbres,
+        timbres: b.timbres,
         remise: b.total,
       };
       const entry: RawSectionIIEntry = b.detailsQuotites
@@ -238,7 +238,7 @@ const loadData = async () => {
         id: r.id!,
         date: r.date.toISOString(),
         type: 'Appro',
-        denominations: r.timbres,
+        timbres: r.timbres,
         remise: r.total,
       };
       const entry: RawSectionIIEntry = r.detailsQuotites
@@ -251,7 +251,7 @@ const loadData = async () => {
         id: v.id!,
         date: v.date.toISOString(),
         type: 'Versement',
-        denominations: v.timbres,
+        timbres: v.timbres,
         versement: v.total,
       };
       const entry: RawSectionIIEntry = v.detailsQuotites
@@ -274,24 +274,11 @@ const loadData = async () => {
         id: b.id!,
         date: b.date.toISOString(),
         type: b.type,
-        denominations: b.timbres,
+        timbres: b.timbres,
         approvisionnement: b.total,
       };
       const entry: RawSectionIIIEntry = b.detailsQuotites
         ? { ...baseEntry, detailsQuotites: b.detailsQuotites }
-        : baseEntry;
-      rawSectionIII.push(entry);
-    });
-    versements.forEach((v) => {
-      const baseEntry: RawSectionIIIEntry = {
-        id: v.id!,
-        date: v.date.toISOString(),
-        type: 'Versement',
-        denominations: v.timbres,
-        versement: v.total,
-      };
-      const entry: RawSectionIIIEntry = v.detailsQuotites
-        ? { ...baseEntry, detailsQuotites: v.detailsQuotites }
         : baseEntry;
       rawSectionIII.push(entry);
     });
@@ -300,11 +287,24 @@ const loadData = async () => {
         id: a.id!,
         date: a.date.toISOString(),
         type: 'Approvisionnement',
-        denominations: a.timbres,
+        timbres: a.timbres,
         approvisionnement: a.total,
       };
       const entry: RawSectionIIIEntry = a.detailsQuotites
         ? { ...baseEntry, detailsQuotites: a.detailsQuotites }
+        : baseEntry;
+      rawSectionIII.push(entry);
+    });
+    versements.forEach((v) => {
+      const baseEntry: RawSectionIIIEntry = {
+        id: v.id!,
+        date: v.date.toISOString(),
+        type: 'Versement',
+        timbres: v.timbres,
+        versement: v.total,
+      };
+      const entry: RawSectionIIIEntry = v.detailsQuotites
+        ? { ...baseEntry, detailsQuotites: v.detailsQuotites }
         : baseEntry;
       rawSectionIII.push(entry);
     });
@@ -320,7 +320,7 @@ const loadData = async () => {
     soldeSectionII.value = sectionIISolde;
     soldeSectionIII.value = sectionIIISolde;
 
-    const quotites = await db.quotites.toArray();
+    const quotites = await db.timbresQuotites.toArray();
     const actives = quotites.filter((q) => q.actif);
     labelsByPrice.value = {};
     activeQuotiteCols.value = actives.map((q) => ({
@@ -345,7 +345,7 @@ const loadData = async () => {
 type MonthlyTotalEntry = {
   isMonthlyTotal: boolean;
   date: string;
-  denominations: DenominationsType;
+  timbres: TimbresType;
   approvisionnement?: number;
   remise?: number;
   versement?: number;
@@ -364,7 +364,7 @@ const addMonthlyTotals = (data: AnySectionEntry[], sectionName: string) => {
   let currentMonth = new Date(data[0]!.date).getMonth();
   let currentYear = new Date(data[0]!.date).getFullYear();
   // Totaux cumulatifs sur l'année (ne sont jamais remis à zéro)
-  const cumulDenom: DenominationsType = { 100: 0, 200: 0, 300: 0, 500: 0, 600: 0, 1000: 0 };
+  const cumulTimbres: TimbresType = { 500: 0, 1000: 0, 3000: 0 };
   const cumulDetailsQuotites: Record<string, number> = {};
   let cumulApprov = 0,
     cumulRemise = 0,
@@ -378,7 +378,7 @@ const addMonthlyTotals = (data: AnySectionEntry[], sectionName: string) => {
       const monthlyTotal: MonthlyTotalEntry & { detailsQuotites?: Record<string, number> } = {
         isMonthlyTotal: true,
         date: getMonthLabel(currentMonth, currentYear),
-        denominations: { ...cumulDenom },
+        timbres: { ...cumulTimbres },
         approvisionnement: cumulApprov,
         remise: cumulRemise,
         versement: cumulVersement,
@@ -403,11 +403,11 @@ const addMonthlyTotals = (data: AnySectionEntry[], sectionName: string) => {
     } else if (sectionName === 'section3') {
       sign = row.type === 'Versement' ? -1 : 1;
     }
-    if (row.denominations) {
-      for (const k in row.denominations) {
-        const key = Number(k);
-        const val = row.denominations[key];
-        if (cumulDenom[key] !== undefined) cumulDenom[key] += (val || 0) * sign;
+    if (row.timbres) {
+      for (const k in row.timbres) {
+        const key = Number(k) as 500 | 1000 | 3000;
+        const val = row.timbres[key];
+        if (cumulTimbres[key] !== undefined) cumulTimbres[key] += (val || 0) * sign;
       }
     }
     // Gérer detailsQuotites avec le bon signe
@@ -426,7 +426,7 @@ const addMonthlyTotals = (data: AnySectionEntry[], sectionName: string) => {
   const finalMonthlyTotal: MonthlyTotalEntry & { detailsQuotites?: Record<string, number> } = {
     isMonthlyTotal: true,
     date: getMonthLabel(currentMonth, currentYear),
-    denominations: { ...cumulDenom },
+    timbres: { ...cumulTimbres },
     approvisionnement: cumulApprov,
     remise: cumulRemise,
     versement: cumulVersement,

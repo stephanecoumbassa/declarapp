@@ -1,10 +1,10 @@
 <template>
-  <div class="q-pa-md" id="section3-print">
+  <div class="q-pa-md" id="section1-print">
     <div class="row items-center justify-between q-mb-md">
       <div class="col">
         <div class="text-h6">
-          <q-icon name="payments" color="secondary" class="q-mr-sm" />
-          Section III - Timbres (BE-S3 + Appros - Versements)
+          <q-icon name="receipt" color="primary" class="q-mr-sm" />
+          Section I - Timbres (Balance d'entrée + Remises)
         </div>
       </div>
       <div class="col-auto no-print row q-gutter-sm">
@@ -34,20 +34,18 @@
         <q-td :props="props">
           <q-badge
             :color="
-              props.row.type === 'BE-S3' || props.row.type === 'Stock initial'
-                ? 'purple'
-                : props.row.type === 'Approvisionnement'
-                  ? 'positive'
-                  : props.row.type === 'Versement'
-                    ? 'negative'
-                    : 'info'
+              props.row.type === 'BE-S1' || props.row.type === 'Stock initial'
+                ? 'info'
+                : props.row.type === 'Remise'
+                  ? 'negative'
+                  : 'positive'
             "
             :label="props.row.type"
           />
         </q-td>
       </template>
 
-      <template v-slot:body-cell-approvisionnement="props">
+      <template v-slot:body-cell-approv="props">
         <q-td :props="props">
           <div v-if="props.row.approvisionnement" class="text-info text-weight-bold">
             {{ formatMontant(props.row.approvisionnement) }}
@@ -55,10 +53,10 @@
         </q-td>
       </template>
 
-      <template v-slot:body-cell-versement="props">
+      <template v-slot:body-cell-remise="props">
         <q-td :props="props">
-          <div v-if="props.row.versement" class="text-negative text-weight-bold">
-            {{ formatMontant(props.row.versement) }}
+          <div v-if="props.row.remise" class="text-negative text-weight-bold">
+            {{ formatMontant(props.row.remise) }}
           </div>
         </q-td>
       </template>
@@ -75,11 +73,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SectionIIIEntry } from '../types';
+import type { SectionIEntry } from '../types';
 import { exportToCsv } from 'src/utils/exportCsv';
 
 const props = defineProps<{
-  data: SectionIIIEntry[];
+  data: SectionIEntry[];
   loading: boolean;
   labels?: Record<number, string>;
   quotites?: { key: string; label: string; prix: number; code: string }[];
@@ -106,37 +104,31 @@ const formatMontant = (montant: number) => {
 const columns = (() => {
   const base = [
     { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
-    { name: 'type', label: 'Nature', field: 'type', align: 'center' as const, sortable: true },
+    { name: 'type', label: 'Type', field: 'type', align: 'center' as const, sortable: true },
   ];
   const priceCols = (props.quotites || []).map((q) => ({
     name: q.key,
     label: q.label,
-    field: (row: SectionIIIEntry) => (row.detailsQuotites && row.detailsQuotites[q.key]) || 0,
+    field: (row: SectionIEntry) => (row.detailsQuotites && row.detailsQuotites[q.key]) || 0,
     align: 'right' as const,
     sortable: true,
   }));
   const tail = [
     {
-      name: 'approvisionnement',
-      label: 'Approv°',
+      name: 'approv',
+      label: 'Approv',
       field: 'approvisionnement',
       align: 'right' as const,
       sortable: true,
     },
-    {
-      name: 'versement',
-      label: 'Versement',
-      field: 'versement',
-      align: 'right' as const,
-      sortable: true,
-    },
+    { name: 'remise', label: 'Remise', field: 'remise', align: 'right' as const, sortable: true },
     { name: 'solde', label: 'Solde', field: 'solde', align: 'right' as const, sortable: true },
   ];
   return [...base, ...priceCols, ...tail];
 })();
 
 function exportCsv() {
-  exportToCsv(props.data, columns, 'section3-timbres-fiscaux');
+  exportToCsv(props.data, columns, 'section1-timbres');
 }
 </script>
 
@@ -150,6 +142,7 @@ function exportCsv() {
   :deep(thead tr:first-child th) {
     /* bg color is important for th; just specify one */
     background-color: #fff;
+    color: #000;
   }
 
   :deep(thead tr th) {

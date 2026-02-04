@@ -169,7 +169,89 @@ export interface Quotite {
   updatedAt: Date;
 }
 
-// ========== Interfaces pour App3 - Gestion des Dépenses ==========
+// ========== Interfaces pour App3 - Gestion des Timbres ==========
+
+export interface TimbresValeurs {
+  500: number;
+  1000: number;
+  3000: number;
+  [key: number]: number;
+}
+
+export interface TimbresApprovisionnement {
+  id?: number;
+  mairieId: number;
+  exercice: number;
+  date: Date;
+  type: string;
+  timbres: TimbresValeurs;
+  detailsQuotites?: Record<string, number>;
+  total: number;
+  observations?: string;
+  personnelId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TimbresRemise {
+  id?: number;
+  mairieId: number;
+  exercice: number;
+  date: Date;
+  type: string;
+  numeroRemise: string;
+  timbres: TimbresValeurs;
+  detailsQuotites?: Record<string, number>;
+  total: number;
+  observations?: string;
+  personnelId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TimbresVersement {
+  id?: number;
+  mairieId: number;
+  exercice: number;
+  date: Date;
+  numeroVersement: string;
+  timbres: TimbresValeurs;
+  detailsQuotites?: Record<string, number>;
+  total: number;
+  observations?: string;
+  personnelId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TimbresBalanceEntree {
+  id?: number;
+  mairieId: number;
+  exercice: number;
+  date: Date;
+  type: string;
+  timbres: TimbresValeurs;
+  detailsQuotites?: Record<string, number>;
+  total: number;
+  commentaires?: string;
+  personnelId: number;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface TimbresQuotite {
+  id?: number;
+  code: string;
+  prix: number;
+  description: string;
+  type: string;
+  mairieId: number;
+  actif: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+// ========== Interfaces pour App4 - Gestion des Dépenses ==========
 
 export interface Chapitre {
   id?: number;
@@ -275,7 +357,13 @@ export class TresorDatabase extends Dexie {
   versements!: EntityTable<Versement, 'id'>;
   balancesEntree!: EntityTable<BalanceEntree, 'id'>;
   quotites!: EntityTable<Quotite, 'id'>;
-  // App3 - Gestion des Dépenses
+  // App3 - Gestion des Timbres
+  timbresApprovisionnements!: EntityTable<TimbresApprovisionnement, 'id'>;
+  timbresRemises!: EntityTable<TimbresRemise, 'id'>;
+  timbresVersements!: EntityTable<TimbresVersement, 'id'>;
+  timbresBalancesEntree!: EntityTable<TimbresBalanceEntree, 'id'>;
+  timbresQuotites!: EntityTable<TimbresQuotite, 'id'>;
+  // App4 - Gestion des Dépenses
   chapitres!: EntityTable<Chapitre, 'id'>;
   sousChapitres!: EntityTable<SousChapitre, 'id'>;
   previsions!: EntityTable<Prevision, 'id'>;
@@ -286,7 +374,7 @@ export class TresorDatabase extends Dexie {
   constructor() {
     super('TresorDatabase');
 
-    this.version(13).stores({
+    this.version(14).stores({
       mairies: '++id, nom, code, ville',
       taxes: '++id, code, libelle, mairieId, type, actif',
       declarations:
@@ -299,7 +387,14 @@ export class TresorDatabase extends Dexie {
       versements: '++id, numeroVersement, date, exercice, mairieId, personnelId',
       balancesEntree: '++id, date, exercice, mairieId, type, personnelId, [exercice+mairieId]',
       quotites: '++id, code, prix, type, mairieId, actif',
-      // App3
+      // App3 - Timbres
+      timbresApprovisionnements: '++id, date, exercice, mairieId, type, personnelId',
+      timbresRemises: '++id, numeroRemise, date, exercice, mairieId, personnelId',
+      timbresVersements: '++id, numeroVersement, date, exercice, mairieId, personnelId',
+      timbresBalancesEntree:
+        '++id, date, exercice, mairieId, type, personnelId, [exercice+mairieId]',
+      timbresQuotites: '++id, code, prix, type, mairieId, actif',
+      // App4
       chapitres: '++id, code, libelle, mairieId, actif',
       sousChapitres: '++id, code, libelle, mairieId, actif',
       previsions: '++id, exercice, chapitreId, mairieId, statut, personnelId',
@@ -837,6 +932,70 @@ export async function initializeDatabase() {
         prix: 100,
         description: 'Ticket',
         type: 'Stationnement',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+    ]);
+
+    // Quotités par défaut (App3 - Timbres)
+    await db.timbresQuotites.bulkAdd([
+      {
+        code: 'TF500',
+        prix: 500,
+        description: 'Timbre fiscal',
+        type: 'Fiscal',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        code: 'TF1000',
+        prix: 1000,
+        description: 'Timbre fiscal',
+        type: 'Fiscal',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        code: 'TF3000',
+        prix: 3000,
+        description: 'Timbre fiscal',
+        type: 'Fiscal',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        code: 'TA500',
+        prix: 500,
+        description: 'Timbre administratif',
+        type: 'Administratif',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        code: 'TA1000',
+        prix: 1000,
+        description: 'Timbre administratif',
+        type: 'Administratif',
+        mairieId: mairieId as number,
+        actif: true,
+        createdAt: now,
+        updatedAt: now,
+      },
+      {
+        code: 'TA3000',
+        prix: 3000,
+        description: 'Timbre administratif',
+        type: 'Administratif',
         mairieId: mairieId as number,
         actif: true,
         createdAt: now,

@@ -1,10 +1,10 @@
 <template>
-  <div class="q-pa-md" id="section3-print">
+  <div class="q-pa-md" id="section2-print">
     <div class="row items-center justify-between q-mb-md">
       <div class="col">
         <div class="text-h6">
-          <q-icon name="payments" color="secondary" class="q-mr-sm" />
-          Section III - Timbres (BE-S3 + Appros - Versements)
+          <q-icon name="swap_horiz" color="primary" class="q-mr-sm" />
+          Section II - Timbres (BE - Versement + Appro)
         </div>
       </div>
       <div class="col-auto no-print row q-gutter-sm">
@@ -34,9 +34,9 @@
         <q-td :props="props">
           <q-badge
             :color="
-              props.row.type === 'BE-S3' || props.row.type === 'Stock initial'
-                ? 'purple'
-                : props.row.type === 'Approvisionnement'
+              props.row.type === 'BE-S2' || props.row.type === 'Stock initial'
+                ? 'info'
+                : props.row.type === 'Appro'
                   ? 'positive'
                   : props.row.type === 'Versement'
                     ? 'negative'
@@ -47,10 +47,10 @@
         </q-td>
       </template>
 
-      <template v-slot:body-cell-approvisionnement="props">
+      <template v-slot:body-cell-remise="props">
         <q-td :props="props">
-          <div v-if="props.row.approvisionnement" class="text-info text-weight-bold">
-            {{ formatMontant(props.row.approvisionnement) }}
+          <div v-if="props.row.remise" class="text-positive text-weight-bold">
+            {{ formatMontant(props.row.remise) }}
           </div>
         </q-td>
       </template>
@@ -75,11 +75,11 @@
 </template>
 
 <script setup lang="ts">
-import type { SectionIIIEntry } from '../types';
+import type { SectionIIEntry } from '../types';
 import { exportToCsv } from 'src/utils/exportCsv';
 
 const props = defineProps<{
-  data: SectionIIIEntry[];
+  data: SectionIIEntry[];
   loading: boolean;
   labels?: Record<number, string>;
   quotites?: { key: string; label: string; prix: number; code: string }[];
@@ -106,23 +106,17 @@ const formatMontant = (montant: number) => {
 const columns = (() => {
   const base = [
     { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
-    { name: 'type', label: 'Nature', field: 'type', align: 'center' as const, sortable: true },
+    { name: 'type', label: 'Type', field: 'type', align: 'center' as const, sortable: true },
   ];
   const priceCols = (props.quotites || []).map((q) => ({
     name: q.key,
     label: q.label,
-    field: (row: SectionIIIEntry) => (row.detailsQuotites && row.detailsQuotites[q.key]) || 0,
+    field: (row: SectionIIEntry) => (row.detailsQuotites && row.detailsQuotites[q.key]) || 0,
     align: 'right' as const,
     sortable: true,
   }));
   const tail = [
-    {
-      name: 'approvisionnement',
-      label: 'Approv°',
-      field: 'approvisionnement',
-      align: 'right' as const,
-      sortable: true,
-    },
+    { name: 'remise', label: 'Appro', field: 'remise', align: 'right' as const, sortable: true },
     {
       name: 'versement',
       label: 'Versement',
@@ -136,7 +130,7 @@ const columns = (() => {
 })();
 
 function exportCsv() {
-  exportToCsv(props.data, columns, 'section3-timbres-fiscaux');
+  exportToCsv(props.data, columns, 'section2-timbres');
 }
 </script>
 
