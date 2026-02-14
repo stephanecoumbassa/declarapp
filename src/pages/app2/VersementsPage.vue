@@ -54,6 +54,18 @@
         :pagination="{ rowsPerPage: 10 }"
         binary-state-sort
       >
+        <template v-slot:body-cell-date="props">
+          <q-td :props="props">
+            {{
+              new Date(props.row.date).toLocaleDateString('fr-FR', {
+                year: 'numeric',
+                month: '2-digit',
+                day: '2-digit',
+              })
+            }}
+          </q-td>
+        </template>
+
         <template v-slot:body-cell-details="props">
           <q-td :props="props">
             <div class="row q-gutter-xs">
@@ -261,6 +273,20 @@ const form = ref<VersementForm>({
 
 const columns = [
   { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
+  {
+    name: 'exercice',
+    label: 'Exercice',
+    field: 'exercice',
+    align: 'center' as const,
+    sortable: true,
+  },
+  {
+    name: 'numeroVersement',
+    label: 'N° Versement',
+    field: 'numeroVersement',
+    align: 'left' as const,
+    sortable: true,
+  },
   { name: 'details', label: 'Détails', field: 'timbres', align: 'left' as const },
   { name: 'total', label: 'Total', field: 'total', align: 'right' as const, sortable: true },
   { name: 'actions', label: 'Actions', field: 'actions', align: 'center' as const },

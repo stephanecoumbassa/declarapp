@@ -4,7 +4,7 @@
       <div class="col">
         <div class="text-h6">
           <q-icon name="receipt" color="primary" class="q-mr-sm" />
-          Section I - Timbres Fiscaux (Balance d'entrée + Remises)
+          Section I - Tickets (Balance d'entrée + Remises)
         </div>
       </div>
       <div class="col-auto no-print row q-gutter-sm">

@@ -6,7 +6,7 @@
           <div class="col">
             <div class="text-h4">Sections de Trésorerie</div>
             <div class="text-subtitle1 text-grey-7">
-              Gestion des flux de trésorerie et des timbres fiscaux
+              Gestion des flux de trésorerie et des tickets
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
             align="justify"
             animated
           >
-            <q-tab name="section1" label="Section I - Timbres Fiscaux" icon="receipt" />
+            <q-tab name="section1" label="Section I - Tickets" icon="receipt" />
             <q-tab name="section2" label="Section II - Remises & Versements" icon="swap_horiz" />
             <q-tab name="section3" label="Section III - Versements" icon="payments" />
           </q-tabs>
