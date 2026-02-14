@@ -6,7 +6,8 @@
       <template v-slot:avatar>
         <q-icon name="warning" />
       </template>
-      <strong>Attention :</strong> Les actions sur cette page peuvent supprimer définitivement les données.
+      <strong>Attention :</strong> Les actions sur cette page peuvent supprimer définitivement les
+      données.
     </q-banner>
 
     <div class="row q-col-gutter-md">
@@ -20,7 +21,10 @@
             <q-item>
               <q-item-section>
                 <q-item-label>Initialiser la base de données</q-item-label>
-                <q-item-label caption>Vide la DB et la remplit avec les données par défaut (mairie, admin, taxes, etc.).</q-item-label>
+                <q-item-label caption
+                  >Vide la DB et la remplit avec les données par défaut (mairie, admin, taxes,
+                  etc.).</q-item-label
+                >
               </q-item-section>
               <q-item-section side>
                 <q-btn
@@ -36,7 +40,9 @@
             <q-item>
               <q-item-section>
                 <q-item-label>Supprimer toutes les données</q-item-label>
-                <q-item-label caption>Vide complètement la base de données. Action irréversible.</q-item-label>
+                <q-item-label caption
+                  >Vide complètement la base de données. Action irréversible.</q-item-label
+                >
               </q-item-section>
               <q-item-section side>
                 <q-btn
@@ -53,7 +59,7 @@
       </div>
 
       <!-- Seeder de Test -->
-      <div class="col-12 col-md-6">
+      <div class="col-12 col-md-6" style="display: none">
         <q-card>
           <q-card-section>
             <div class="text-h6">🧪 Générer des Données de Test</div>
@@ -63,23 +69,73 @@
           </q-card-section>
 
           <q-card-section>
-            <q-expansion-item
-              icon="settings"
-              label="Personnaliser les quantités"
-              class="q-mb-md"
-            >
+            <q-expansion-item icon="settings" label="Personnaliser les quantités" class="q-mb-md">
               <div class="q-gutter-md q-pt-md">
-                <q-input v-model.number="testDataOptions.declarations" type="number" label="Déclarations" filled dense />
-                <q-input v-model.number="testDataOptions.bordereaux" type="number" label="Bordereaux de Recette" filled dense />
-                <q-input v-model.number="testDataOptions.mandats" type="number" label="Mandats" filled dense />
-                <q-input v-model.number="testDataOptions.bordereauMandats" type="number" label="Bordereaux de Mandats" filled dense />
+                <q-input
+                  v-model.number="testDataOptions.declarations"
+                  type="number"
+                  label="Déclarations"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.bordereaux"
+                  type="number"
+                  label="Bordereaux de Recette"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.mandats"
+                  type="number"
+                  label="Mandats"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.bordereauMandats"
+                  type="number"
+                  label="Bordereaux de Mandats"
+                  filled
+                  dense
+                />
                 <q-separator />
                 <div class="text-subtitle2">App2 - Trésorerie</div>
-                <q-input v-model.number="testDataOptions.approvisionnements" type="number" label="Approvisionnements" filled dense />
-                <q-input v-model.number="testDataOptions.remises" type="number" label="Remises" filled dense />
-                <q-input v-model.number="testDataOptions.versements" type="number" label="Versements" filled dense />
-                <q-input v-model.number="testDataOptions.balancesEntree" type="number" label="Balances d'Entrée" filled dense />
-                <q-input v-model.number="testDataOptions.quotites" type="number" label="Quotités" filled dense />
+                <q-input
+                  v-model.number="testDataOptions.approvisionnements"
+                  type="number"
+                  label="Approvisionnements"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.remises"
+                  type="number"
+                  label="Remises"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.versements"
+                  type="number"
+                  label="Versements"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.balancesEntree"
+                  type="number"
+                  label="Balances d'Entrée"
+                  filled
+                  dense
+                />
+                <q-input
+                  v-model.number="testDataOptions.quotites"
+                  type="number"
+                  label="Quotités"
+                  filled
+                  dense
+                />
               </div>
             </q-expansion-item>
           </q-card-section>
@@ -127,7 +183,12 @@
             <div class="text-h6">📝 Logs d'exécution</div>
           </q-card-section>
           <q-card-section style="max-height: 300px; overflow-y: auto">
-            <div v-for="(log, index) in logs" :key="index" class="text-caption q-mb-xs" v-html="log"></div>
+            <div
+              v-for="(log, index) in logs"
+              :key="index"
+              class="text-caption q-mb-xs"
+              v-html="log"
+            ></div>
           </q-card-section>
           <q-card-actions align="right">
             <q-btn flat label="Effacer" icon="clear" color="grey" @click="logs = []" />
@@ -142,7 +203,12 @@
 import { ref, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db } from 'src/database/db';
-import { seedDefaultData, seedTestData, clearDatabase, type SeedOptions } from 'src/database/seeders';
+import {
+  seedDefaultData,
+  seedTestData,
+  clearDatabase,
+  type SeedOptions,
+} from 'src/database/seeders';
 
 const $q = useQuasar();
 
@@ -185,19 +251,22 @@ const stats = ref([
 
 function addLog(message: string) {
   const timestamp = new Date().toLocaleTimeString();
-  const color = message.includes('✅') || message.includes('✨') ? 'green'
-              : message.includes('❌') ? 'red'
-              : message.includes('🌱') ? 'blue'
-              : message.includes('🗑️') ? 'orange'
-              : 'white';
+  const color =
+    message.includes('✅') || message.includes('✨')
+      ? 'green'
+      : message.includes('❌')
+        ? 'red'
+        : message.includes('🌱')
+          ? 'blue'
+          : message.includes('🗑️')
+            ? 'orange'
+            : 'white';
   logs.value.push(`[${timestamp}] <span class="text-${color}">${message}</span>`);
 }
 
 async function loadStats() {
   try {
-    const counts = await Promise.all(
-      stats.value.map(stat => db.table(stat.table).count())
-    );
+    const counts = await Promise.all(stats.value.map((stat) => db.table(stat.table).count()));
     stats.value.forEach((stat, index) => {
       stat.count = counts[index] ?? 0;
     });
@@ -208,7 +277,11 @@ async function loadStats() {
 }
 
 // Wrapper pour exécuter une fonction de seeder avec gestion de logs et d'état
-async function runSeederAction(action: () => Promise<void>, type: 'default' | 'test' | 'clear', successMessage: string) {
+async function runSeederAction(
+  action: () => Promise<void>,
+  type: 'default' | 'test' | 'clear',
+  successMessage: string,
+) {
   loading.value[type] = true;
   logs.value = [];
 
@@ -235,7 +308,8 @@ async function runSeederAction(action: () => Promise<void>, type: 'default' | 't
 function runSeedDefault() {
   $q.dialog({
     title: 'Confirmation',
-    message: 'Voulez-vous vraiment initialiser la base de données ? Toutes les données actuelles seront supprimées.',
+    message:
+      'Voulez-vous vraiment initialiser la base de données ? Toutes les données actuelles seront supprimées.',
     cancel: true,
     persistent: true,
   }).onOk(() => {
@@ -246,11 +320,16 @@ function runSeedDefault() {
 function runSeedTest() {
   $q.dialog({
     title: 'Confirmation',
-    message: 'Voulez-vous vraiment générer les données de test ? Cela va d\'abord initialiser la base de données.',
+    message:
+      "Voulez-vous vraiment générer les données de test ? Cela va d'abord initialiser la base de données.",
     cancel: true,
     persistent: true,
   }).onOk(() => {
-    void runSeederAction(() => seedTestData(testDataOptions.value), 'test', 'Données de test générées avec succès !');
+    void runSeederAction(
+      () => seedTestData(testDataOptions.value),
+      'test',
+      'Données de test générées avec succès !',
+    );
   });
 }
 
