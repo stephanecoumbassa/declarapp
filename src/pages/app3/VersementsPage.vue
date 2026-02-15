@@ -18,15 +18,34 @@
     <q-card class="q-mb-md">
       <q-card-section>
         <div class="row q-col-gutter-md">
-          <div class="col-12 col-sm-6">
+          <div class="col-12 col-sm-6 col-md-4">
             <q-input v-model="search" filled placeholder="Rechercher..." dense clearable>
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
             </q-input>
           </div>
-          <div class="col-12 col-sm-6">
-            <q-input v-model="filterDate" filled dense type="date" label="Date" clearable />
+          <div class="col-12 col-sm-6 col-md-4">
+            <q-select
+              v-model="filterMonth"
+              filled
+              dense
+              label="Mois"
+              :options="monthOptions"
+              emit-value
+              map-options
+              clearable
+            />
+          </div>
+          <div class="col-12 col-sm-6 col-md-4">
+            <q-select
+              v-model="filterYear"
+              filled
+              dense
+              label="Année"
+              :options="yearOptions"
+              clearable
+            />
           </div>
         </div>
       </q-card-section>
@@ -231,7 +250,27 @@ const quotites = ref<TimbresQuotite[]>([]);
 const quantites = ref<Record<string, number>>({});
 
 const search = ref('');
-const filterDate = ref<string | null>(null);
+const filterMonth = ref<number | null>(null);
+const filterYear = ref<number | null>(new Date().getFullYear());
+const monthOptions = [
+  { label: 'Tous', value: null },
+  { label: 'Janvier', value: 1 },
+  { label: 'Février', value: 2 },
+  { label: 'Mars', value: 3 },
+  { label: 'Avril', value: 4 },
+  { label: 'Mai', value: 5 },
+  { label: 'Juin', value: 6 },
+  { label: 'Juillet', value: 7 },
+  { label: 'Août', value: 8 },
+  { label: 'Septembre', value: 9 },
+  { label: 'Octobre', value: 10 },
+  { label: 'Novembre', value: 11 },
+  { label: 'Décembre', value: 12 },
+];
+const yearOptions = Array.from(
+  { length: new Date().getFullYear() - 2019 },
+  (_, i) => 2020 + i,
+).reverse();
 const loading = ref(false);
 const saving = ref(false);
 const dialogVisible = ref(false);
@@ -278,10 +317,18 @@ const filteredVersements = computed(() => {
     );
   }
 
-  if (filterDate.value) {
-    result = result.filter(
-      (v) => new Date(v.date).toISOString().split('T')[0] === filterDate.value,
-    );
+  if (filterYear.value) {
+    result = result.filter((v) => {
+      const d = new Date(v.date);
+      return d.getFullYear() === filterYear.value;
+    });
+  }
+
+  if (filterMonth.value) {
+    result = result.filter((v) => {
+      const d = new Date(v.date);
+      return d.getMonth() + 1 === filterMonth.value;
+    });
   }
 
   return result;

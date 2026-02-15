@@ -36,202 +36,202 @@
 
     <!-- Actual content -->
     <template v-if="isUnlocked">
-    <div class="text-h5 q-mb-md">⚙️ Gestion de la Base de Données</div>
+      <div class="text-h5 q-mb-md">⚙️ Gestion de la Base de Données</div>
 
-    <q-banner class="bg-warning text-white q-mb-md" rounded>
-      <template v-slot:avatar>
-        <q-icon name="warning" />
-      </template>
-      <strong>Attention :</strong> Les actions sur cette page peuvent supprimer définitivement les
-      données.
-    </q-banner>
+      <q-banner class="bg-warning text-white q-mb-md" rounded>
+        <template v-slot:avatar>
+          <q-icon name="warning" />
+        </template>
+        <strong>Attention :</strong> Les actions sur cette page peuvent supprimer définitivement les
+        données.
+      </q-banner>
 
-    <div class="row q-col-gutter-md">
-      <!-- Actions Principales -->
-      <div class="col-12 col-md-6">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">🚀 Actions Rapides</div>
-          </q-card-section>
-          <q-list separator>
-            <q-item>
-              <q-item-section>
-                <q-item-label>Initialiser la base de données</q-item-label>
-                <q-item-label caption
-                  >Vide la DB et la remplit avec les données par défaut (mairie, admin, taxes,
-                  etc.).</q-item-label
-                >
-              </q-item-section>
-              <q-item-section side>
-                <q-btn
-                  label="Initialiser"
-                  color="primary"
-                  icon="rocket_launch"
-                  @click="runSeedDefault"
-                  :loading="loading.default"
-                />
-              </q-item-section>
-            </q-item>
+      <div class="row q-col-gutter-md">
+        <!-- Actions Principales -->
+        <div class="col-12 col-md-6">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">🚀 Actions Rapides</div>
+            </q-card-section>
+            <q-list separator>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>Initialiser la base de données</q-item-label>
+                  <q-item-label caption
+                    >Vide la DB et la remplit avec les données par défaut (mairie, admin, taxes,
+                    etc.).</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn
+                    label="Initialiser"
+                    color="primary"
+                    icon="rocket_launch"
+                    @click="runSeedDefault"
+                    :loading="loading.default"
+                  />
+                </q-item-section>
+              </q-item>
 
-            <q-item>
-              <q-item-section>
-                <q-item-label>Supprimer toutes les données</q-item-label>
-                <q-item-label caption
-                  >Vide complètement la base de données. Action irréversible.</q-item-label
-                >
-              </q-item-section>
-              <q-item-section side>
-                <q-btn
-                  label="Supprimer"
-                  color="negative"
-                  icon="delete_forever"
-                  @click="runClear"
-                  :loading="loading.clear"
-                />
-              </q-item-section>
-            </q-item>
-          </q-list>
-        </q-card>
-      </div>
+              <q-item>
+                <q-item-section>
+                  <q-item-label>Supprimer toutes les données</q-item-label>
+                  <q-item-label caption
+                    >Vide complètement la base de données. Action irréversible.</q-item-label
+                  >
+                </q-item-section>
+                <q-item-section side>
+                  <q-btn
+                    label="Supprimer"
+                    color="negative"
+                    icon="delete_forever"
+                    @click="runClear"
+                    :loading="loading.clear"
+                  />
+                </q-item-section>
+              </q-item>
+            </q-list>
+          </q-card>
+        </div>
 
-      <!-- Seeder de Test -->
-      <div class="col-12 col-md-6" style="display: none">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">🧪 Générer des Données de Test</div>
-            <div class="text-caption">
-              Remplit la base avec un grand volume de données aléatoires pour les tests.
-            </div>
-          </q-card-section>
-
-          <q-card-section>
-            <q-expansion-item icon="settings" label="Personnaliser les quantités" class="q-mb-md">
-              <div class="q-gutter-md q-pt-md">
-                <q-input
-                  v-model.number="testDataOptions.declarations"
-                  type="number"
-                  label="Déclarations"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.bordereaux"
-                  type="number"
-                  label="Bordereaux de Recette"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.mandats"
-                  type="number"
-                  label="Mandats"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.bordereauMandats"
-                  type="number"
-                  label="Bordereaux de Mandats"
-                  filled
-                  dense
-                />
-                <q-separator />
-                <div class="text-subtitle2">App2 - Trésorerie</div>
-                <q-input
-                  v-model.number="testDataOptions.approvisionnements"
-                  type="number"
-                  label="Approvisionnements"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.remises"
-                  type="number"
-                  label="Remises"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.versements"
-                  type="number"
-                  label="Versements"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.balancesEntree"
-                  type="number"
-                  label="Balances d'Entrée"
-                  filled
-                  dense
-                />
-                <q-input
-                  v-model.number="testDataOptions.quotites"
-                  type="number"
-                  label="Quotités"
-                  filled
-                  dense
-                />
+        <!-- Seeder de Test -->
+        <div class="col-12 col-md-6">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">🧪 Générer des Données de Test</div>
+              <div class="text-caption">
+                Remplit la base avec un grand volume de données aléatoires pour les tests.
               </div>
-            </q-expansion-item>
-          </q-card-section>
+            </q-card-section>
 
-          <q-card-actions align="right">
-            <q-btn
-              label="Générer Données de Test"
-              color="secondary"
-              icon="science"
-              @click="runSeedTest"
-              :loading="loading.test"
-            />
-          </q-card-actions>
-        </q-card>
-      </div>
+            <q-card-section>
+              <q-expansion-item icon="settings" label="Personnaliser les quantités" class="q-mb-md">
+                <div class="q-gutter-md q-pt-md">
+                  <q-input
+                    v-model.number="testDataOptions.declarations"
+                    type="number"
+                    label="Déclarations"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.bordereaux"
+                    type="number"
+                    label="Bordereaux de Recette"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.mandats"
+                    type="number"
+                    label="Mandats"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.bordereauMandats"
+                    type="number"
+                    label="Bordereaux de Mandats"
+                    filled
+                    dense
+                  />
+                  <q-separator />
+                  <div class="text-subtitle2">App2 - Trésorerie</div>
+                  <q-input
+                    v-model.number="testDataOptions.approvisionnements"
+                    type="number"
+                    label="Approvisionnements"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.remises"
+                    type="number"
+                    label="Remises"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.versements"
+                    type="number"
+                    label="Versements"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.balancesEntree"
+                    type="number"
+                    label="Balances d'Entrée"
+                    filled
+                    dense
+                  />
+                  <q-input
+                    v-model.number="testDataOptions.quotites"
+                    type="number"
+                    label="Quotités"
+                    filled
+                    dense
+                  />
+                </div>
+              </q-expansion-item>
+            </q-card-section>
 
-      <!-- Statistiques -->
-      <div class="col-12">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">📊 Données Actuelles</div>
-          </q-card-section>
-          <q-card-section>
-            <div class="row q-col-gutter-md">
-              <div class="col-6 col-sm-4 col-md-2" v-for="stat in stats" :key="stat.label">
-                <q-card flat bordered>
-                  <q-card-section class="text-center">
-                    <div class="text-h4 text-primary">{{ stat.count }}</div>
-                    <div class="text-caption text-grey-7">{{ stat.label }}</div>
-                  </q-card-section>
-                </q-card>
+            <q-card-actions align="right">
+              <q-btn
+                label="Générer Données de Test"
+                color="secondary"
+                icon="science"
+                @click="runSeedTest"
+                :loading="loading.test"
+              />
+            </q-card-actions>
+          </q-card>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="col-12">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">📊 Données Actuelles</div>
+            </q-card-section>
+            <q-card-section>
+              <div class="row q-col-gutter-md">
+                <div class="col-6 col-sm-4 col-md-2" v-for="stat in stats" :key="stat.label">
+                  <q-card flat bordered>
+                    <q-card-section class="text-center">
+                      <div class="text-h4 text-primary">{{ stat.count }}</div>
+                      <div class="text-caption text-grey-7">{{ stat.label }}</div>
+                    </q-card-section>
+                  </q-card>
+                </div>
               </div>
-            </div>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Actualiser" icon="refresh" color="primary" @click="loadStats" />
-          </q-card-actions>
-        </q-card>
-      </div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Actualiser" icon="refresh" color="primary" @click="loadStats" />
+            </q-card-actions>
+          </q-card>
+        </div>
 
-      <!-- Logs -->
-      <div class="col-12" v-if="logs.length > 0">
-        <q-card>
-          <q-card-section>
-            <div class="text-h6">📝 Logs d'exécution</div>
-          </q-card-section>
-          <q-card-section style="max-height: 300px; overflow-y: auto">
-            <div
-              v-for="(log, index) in logs"
-              :key="index"
-              class="text-caption q-mb-xs"
-              v-html="log"
-            ></div>
-          </q-card-section>
-          <q-card-actions align="right">
-            <q-btn flat label="Effacer" icon="clear" color="grey" @click="logs = []" />
-          </q-card-actions>
-        </q-card>
+        <!-- Logs -->
+        <div class="col-12" v-if="logs.length > 0">
+          <q-card>
+            <q-card-section>
+              <div class="text-h6">📝 Logs d'exécution</div>
+            </q-card-section>
+            <q-card-section style="max-height: 300px; overflow-y: auto">
+              <div
+                v-for="(log, index) in logs"
+                :key="index"
+                class="text-caption q-mb-xs"
+                v-html="log"
+              ></div>
+            </q-card-section>
+            <q-card-actions align="right">
+              <q-btn flat label="Effacer" icon="clear" color="grey" @click="logs = []" />
+            </q-card-actions>
+          </q-card>
+        </div>
       </div>
-    </div>
     </template>
   </q-page>
 </template>
