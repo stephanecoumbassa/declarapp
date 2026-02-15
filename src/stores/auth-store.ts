@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('auth', () => {
         console.log('🔧 Création du compte admin par défaut...');
         await db.utilisateurs.add({
           username: 'admin',
-          password: 'admin123',
+          password: 'Sigobc@2026!',
           nom: 'Administrateur',
           prenom: 'Système',
           email: 'admin@tresor.gov',

@@ -36,7 +36,11 @@
 
     <!-- Actual content -->
     <template v-if="isUnlocked">
-    <div class="text-h5 q-mb-md">💾 Sauvegarde & Restauration</div>
+    <PageHeader
+      title="Sauvegarde & Restauration"
+      subtitle="Exportation et importation des données"
+      icon="backup"
+    />
 
     <div class="row q-col-gutter-md">
       <!-- Sauvegarde -->
@@ -74,8 +78,8 @@
                   <q-icon name="check_circle" color="positive" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Mairies</q-item-label>
-                  <q-item-label caption>{{ stats.mairies }} enregistrement(s)</q-item-label>
+                  <q-item-label>Chapitres (Dépenses)</q-item-label>
+                  <q-item-label caption>{{ stats.chapitres }} enregistrement(s)</q-item-label>
                 </q-item-section>
               </q-item>
 
@@ -84,28 +88,72 @@
                   <q-icon name="check_circle" color="positive" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Taxes</q-item-label>
+                  <q-item-label>Sous-Chapitres (Dépenses)</q-item-label>
+                  <q-item-label caption>{{ stats.sousChapitres }} enregistrement(s)</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="positive" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Prévisions (Dépenses)</q-item-label>
+                  <q-item-label caption>{{ stats.previsions }} enregistrement(s)</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="positive" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Mandats (Dépenses)</q-item-label>
+                  <q-item-label caption>{{ stats.mandats }} enregistrement(s)</q-item-label>
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="positive" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Bordereaux Mandats (Dépenses)</q-item-label>
+                  <q-item-label caption
+                    >{{ stats.bordereauMandats }} enregistrement(s)</q-item-label
+                  >
+                </q-item-section>
+              </q-item>
+
+              <q-item>
+                <q-item-section avatar>
+                  <q-icon name="check_circle" color="green" />
+                </q-item-section>
+                <q-item-section>
+                  <q-item-label>Taxes (Recettes)</q-item-label>
                   <q-item-label caption>{{ stats.taxes }} enregistrement(s)</q-item-label>
                 </q-item-section>
               </q-item>
 
               <q-item>
                 <q-item-section avatar>
-                  <q-icon name="check_circle" color="positive" />
+                  <q-icon name="check_circle" color="green" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Déclarations</q-item-label>
+                  <q-item-label>Déclarations (Recettes)</q-item-label>
                   <q-item-label caption>{{ stats.declarations }} enregistrement(s)</q-item-label>
                 </q-item-section>
               </q-item>
 
               <q-item>
                 <q-item-section avatar>
-                  <q-icon name="check_circle" color="positive" />
+                  <q-icon name="check_circle" color="green" />
                 </q-item-section>
                 <q-item-section>
-                  <q-item-label>Bordereaux</q-item-label>
-                  <q-item-label caption>{{ stats.bordereaux }} enregistrement(s)</q-item-label>
+                  <q-item-label>Bordereaux Recette (Recettes)</q-item-label>
+                  <q-item-label caption
+                    >{{ stats.bordereauxRecette }} enregistrement(s)</q-item-label
+                  >
                 </q-item-section>
               </q-item>
             </q-list>
@@ -215,7 +263,6 @@
           </q-card-section>
         </q-card>
       </div>
-    </div>
     </template>
   </q-page>
 </template>
@@ -224,6 +271,7 @@
 import { ref, onMounted } from 'vue';
 import { useQuasar } from 'quasar';
 import { db } from 'src/database/db';
+import PageHeader from 'src/components/PageHeader.vue';
 
 const $q = useQuasar();
 
@@ -253,10 +301,14 @@ const importLoading = ref(false);
 
 const stats = ref({
   utilisateurs: 0,
-  mairies: 0,
+  chapitres: 0,
+  sousChapitres: 0,
+  previsions: 0,
+  mandats: 0,
+  bordereauMandats: 0,
   taxes: 0,
   declarations: 0,
-  bordereaux: 0,
+  bordereauxRecette: 0,
 });
 
 interface HistoryItem {
@@ -270,9 +322,23 @@ const history = ref<HistoryItem[]>([]);
 
 async function loadStats() {
   try {
-    const [utilisateurs, mairies, taxes, declarations, bordereaux] = await Promise.all([
+    const [
+      utilisateurs,
+      chapitres,
+      sousChapitres,
+      previsions,
+      mandats,
+      bordereauMandats,
+      taxes,
+      declarations,
+      bordereauxRecette,
+    ] = await Promise.all([
       db.utilisateurs.count(),
-      db.mairies.count(),
+      db.chapitres.count(),
+      db.sousChapitres.count(),
+      db.previsions.count(),
+      db.mandats.count(),
+      db.bordereauMandats.count(),
       db.taxes.count(),
       db.declarations.count(),
       db.bordereauxRecette.count(),
@@ -280,10 +346,14 @@ async function loadStats() {
 
     stats.value = {
       utilisateurs,
-      mairies,
+      chapitres,
+      sousChapitres,
+      previsions,
+      mandats,
+      bordereauMandats,
       taxes,
       declarations,
-      bordereaux,
+      bordereauxRecette,
     };
   } catch (error) {
     console.error('Erreur lors du chargement des statistiques:', error);
@@ -324,9 +394,23 @@ async function exportDatabase() {
   exportLoading.value = true;
   try {
     // Récupérer toutes les données de toutes les tables
-    const [utilisateurs, mairies, taxes, declarations, bordereaux] = await Promise.all([
+    const [
+      utilisateurs,
+      chapitres,
+      sousChapitres,
+      previsions,
+      mandats,
+      bordereauMandats,
+      taxes,
+      declarations,
+      bordereauxRecette,
+    ] = await Promise.all([
       db.utilisateurs.toArray(),
-      db.mairies.toArray(),
+      db.chapitres.toArray(),
+      db.sousChapitres.toArray(),
+      db.previsions.toArray(),
+      db.mandats.toArray(),
+      db.bordereauMandats.toArray(),
       db.taxes.toArray(),
       db.declarations.toArray(),
       db.bordereauxRecette.toArray(),
@@ -334,22 +418,30 @@ async function exportDatabase() {
 
     // Créer l'objet de sauvegarde
     const backup = {
-      version: '1.0',
-      appName: 'TresorApp',
+      version: '2.0',
+      appName: 'SIGOBC-MAIRIE',
       exportDate: new Date().toISOString(),
       data: {
         utilisateurs,
-        mairies,
+        chapitres,
+        sousChapitres,
+        previsions,
+        mandats,
+        bordereauMandats,
         taxes,
         declarations,
-        bordereaux,
+        bordereauxRecette,
       },
       stats: {
         utilisateurs: utilisateurs.length,
-        mairies: mairies.length,
+        chapitres: chapitres.length,
+        sousChapitres: sousChapitres.length,
+        previsions: previsions.length,
+        mandats: mandats.length,
+        bordereauMandats: bordereauMandats.length,
         taxes: taxes.length,
         declarations: declarations.length,
-        bordereaux: bordereaux.length,
+        bordereauxRecette: bordereauxRecette.length,
       },
     };
 
@@ -363,17 +455,14 @@ async function exportDatabase() {
     link.href = url;
     const dateStr = new Date().toISOString().split('T')[0];
     const timeStr = new Date().toTimeString().split(' ')[0]?.replace(/:/g, '-');
-    link.download = `tresor-backup-${dateStr}-${timeStr}.json`;
+    link.download = `sigobc-mairie-backup-${dateStr}-${timeStr}.json`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
     URL.revokeObjectURL(url);
 
-    addToHistory(
-      'export',
-      `Sauvegarde créée (${backup.stats.utilisateurs + backup.stats.mairies + backup.stats.taxes + backup.stats.declarations + backup.stats.bordereaux} enregistrements)`,
-      true,
-    );
+    const totalRecords = Object.values(backup.stats).reduce((a, b) => a + b, 0);
+    addToHistory('export', `Sauvegarde créée (${totalRecords} enregistrements)`, true);
 
     $q.notify({
       type: 'positive',
@@ -413,17 +502,18 @@ function importDatabase() {
         const backup = JSON.parse(json);
 
         // Vérifier la structure du backup
-        if (!backup.data || !backup.appName || backup.appName !== 'TresorApp') {
+        if (
+          !backup.data ||
+          !backup.appName ||
+          (!backup.appName.startsWith('TresorApp') && !backup.appName.startsWith('SIGOBC'))
+        ) {
           throw new Error('Format de fichier invalide ou incompatible');
         }
 
         const exportDate = new Date(backup.exportDate).toLocaleString('fr-FR');
-        const totalRecords =
-          (backup.stats?.utilisateurs || 0) +
-          (backup.stats?.mairies || 0) +
-          (backup.stats?.taxes || 0) +
-          (backup.stats?.declarations || 0) +
-          (backup.stats?.bordereaux || 0);
+        const totalRecords = backup.stats
+          ? Object.values(backup.stats).reduce((a: number, b: unknown) => a + (b as number), 0)
+          : 0;
 
         // Demander confirmation
         $q.dialog({
@@ -444,7 +534,11 @@ function importDatabase() {
                 // Vider les tables existantes
                 await Promise.all([
                   db.utilisateurs.clear(),
-                  db.mairies.clear(),
+                  db.chapitres.clear(),
+                  db.sousChapitres.clear(),
+                  db.previsions.clear(),
+                  db.mandats.clear(),
+                  db.bordereauMandats.clear(),
                   db.taxes.clear(),
                   db.declarations.clear(),
                   db.bordereauxRecette.clear(),
@@ -456,9 +550,25 @@ function importDatabase() {
                   await db.utilisateurs.bulkAdd(backup.data.utilisateurs);
                   restored += backup.data.utilisateurs.length;
                 }
-                if (backup.data.mairies?.length) {
-                  await db.mairies.bulkAdd(backup.data.mairies);
-                  restored += backup.data.mairies.length;
+                if (backup.data.chapitres?.length) {
+                  await db.chapitres.bulkAdd(backup.data.chapitres);
+                  restored += backup.data.chapitres.length;
+                }
+                if (backup.data.sousChapitres?.length) {
+                  await db.sousChapitres.bulkAdd(backup.data.sousChapitres);
+                  restored += backup.data.sousChapitres.length;
+                }
+                if (backup.data.previsions?.length) {
+                  await db.previsions.bulkAdd(backup.data.previsions);
+                  restored += backup.data.previsions.length;
+                }
+                if (backup.data.mandats?.length) {
+                  await db.mandats.bulkAdd(backup.data.mandats);
+                  restored += backup.data.mandats.length;
+                }
+                if (backup.data.bordereauMandats?.length) {
+                  await db.bordereauMandats.bulkAdd(backup.data.bordereauMandats);
+                  restored += backup.data.bordereauMandats.length;
                 }
                 if (backup.data.taxes?.length) {
                   await db.taxes.bulkAdd(backup.data.taxes);
@@ -468,9 +578,9 @@ function importDatabase() {
                   await db.declarations.bulkAdd(backup.data.declarations);
                   restored += backup.data.declarations.length;
                 }
-                if (backup.data.bordereaux?.length) {
-                  await db.bordereauxRecette.bulkAdd(backup.data.bordereaux);
-                  restored += backup.data.bordereaux.length;
+                if (backup.data.bordereauxRecette?.length) {
+                  await db.bordereauxRecette.bulkAdd(backup.data.bordereauxRecette);
+                  restored += backup.data.bordereauxRecette.length;
                 }
 
                 addToHistory('import', `Restauration réussie (${restored} enregistrements)`, true);
