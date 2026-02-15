@@ -318,7 +318,10 @@ const monthOptions = [
   { label: 'Novembre', value: 11 },
   { label: 'Décembre', value: 12 },
 ];
-const yearOptions = Array.from({ length: new Date().getFullYear() - 2019 }, (_, i) => 2020 + i).reverse();
+const yearOptions = Array.from(
+  { length: new Date().getFullYear() - 2019 },
+  (_, i) => 2020 + i,
+).reverse();
 const loading = ref(false);
 const saving = ref(false);
 const dialogVisible = ref(false);
