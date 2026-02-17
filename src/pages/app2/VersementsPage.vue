@@ -258,7 +258,7 @@ const quantites = ref<Record<string, number>>({});
 
 const search = ref('');
 const filterMonth = ref<number | null>(null);
-const filterYear = ref<number | null>(new Date().getFullYear());
+const filterYear = ref<number | null>(2026);
 const monthOptions = [
   { label: 'Tous', value: null },
   { label: 'Janvier', value: 1 },
@@ -297,7 +297,7 @@ interface VersementForm {
 
 const form = ref<VersementForm>({
   date: new Date().toISOString().split('T')[0] as string,
-  exercice: new Date().getFullYear(),
+  exercice: 2026,
   timbres: {
     100: 0,
     200: 0,
@@ -437,7 +437,7 @@ const openDialog = (versement?: Versement) => {
     isEditing.value = false;
     form.value = {
       date: new Date().toISOString().split('T')[0] as string,
-      exercice: new Date().getFullYear(),
+      exercice: 2026,
       timbres: { 100: 0, 200: 0, 300: 0, 500: 0, 600: 0, 1000: 0 },
       total: 0,
       commentaires: '',
@@ -571,3 +571,4 @@ onMounted(() => {
   })();
 });
 </script>
+

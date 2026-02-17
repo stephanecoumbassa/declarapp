@@ -203,11 +203,11 @@ import type {
 
 const $q = useQuasar();
 
-const currentYear = new Date().getFullYear();
+const currentYear = 2026;
 const selectedYear = ref(currentYear);
 
 const loading = ref(false);
-const periodFilter = ref('mois');
+const periodFilter = ref('annee');
 const dateDebut = ref('');
 const dateFin = ref('');
 
@@ -387,6 +387,7 @@ function getStockColor(stock: number): string {
 
 function onPeriodChange() {
   const today = new Date();
+  const year = selectedYear.value;
   let debut = new Date();
   let fin = new Date();
 
@@ -400,18 +401,18 @@ function onPeriodChange() {
       fin = new Date();
       break;
     case 'mois':
-      debut = new Date(today.getFullYear(), today.getMonth(), 1);
-      fin = new Date();
+      debut = new Date(year, today.getMonth(), 1);
+      fin = new Date(year, today.getMonth() + 1, 0);
       break;
     case 'trimestre': {
       const quarter = Math.floor(today.getMonth() / 3);
-      debut = new Date(today.getFullYear(), quarter * 3, 1);
-      fin = new Date();
+      debut = new Date(year, quarter * 3, 1);
+      fin = new Date(year, quarter * 3 + 3, 0);
       break;
     }
     case 'annee':
-      debut = new Date(today.getFullYear(), 0, 1);
-      fin = new Date();
+      debut = new Date(year, 0, 1);
+      fin = new Date(year, 11, 31);
       break;
     default:
       return;
@@ -424,7 +425,7 @@ function onPeriodChange() {
 }
 
 function resetFilters() {
-  periodFilter.value = 'mois';
+  periodFilter.value = 'annee';
   onPeriodChange();
 }
 
@@ -609,7 +610,7 @@ const evolutionChartConfig = computed<ChartConfiguration>(() => {
     },
     options: {
       responsive: true,
-      maintainAspectRatio: true,
+      maintainAspectRatio: false,
       plugins: {
         legend: { position: 'bottom' },
         tooltip: {

@@ -274,7 +274,7 @@ const form = ref<Partial<TimbresBalanceEntree>>({
   date: new Date(),
   timbres: { 500: 0, 1000: 0, 3000: 0 },
   total: 0,
-  exercice: new Date().getFullYear(),
+  exercice: 2026,
   commentaires: '',
 });
 
@@ -404,7 +404,7 @@ const openDialog = (balance?: TimbresBalanceEntree) => {
       date: new Date(),
       timbres: empty,
       total: 0,
-      exercice: new Date().getFullYear(),
+      exercice: 2026,
       commentaires: '',
     };
   }
@@ -421,7 +421,7 @@ const onSubmit = async () => {
     // S'assurer que la date est un nouvel objet Date pour éviter les problèmes de clonage
     const dateValue = form.value.date ? new Date(form.value.date) : now;
 
-    const exerciceValue = form.value.exercice || new Date().getFullYear();
+    const exerciceValue = form.value.exercice || 2026;
 
     const data = {
       mairieId,
@@ -533,3 +533,4 @@ onMounted(() => {
   })();
 });
 </script>
+

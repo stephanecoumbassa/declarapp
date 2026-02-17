@@ -282,21 +282,6 @@
         <q-item
           clickable
           v-ripple
-          to="/app2/statistiques"
-          class="nav-item q-mb-xs"
-          active-class="nav-item-active"
-        >
-          <q-item-section avatar>
-            <q-icon name="bar_chart" color="grey-7" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Statistiques</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          v-ripple
           to="/app2/quotites"
           class="nav-item q-mb-xs"
           active-class="nav-item-active"
@@ -306,6 +291,21 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Quotités</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app2/statistiques"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="bar_chart" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Statistiques</q-item-label>
           </q-item-section>
         </q-item>
 
@@ -409,21 +409,6 @@
         <q-item
           clickable
           v-ripple
-          to="/app3/statistiques"
-          class="nav-item q-mb-xs"
-          active-class="nav-item-active"
-        >
-          <q-item-section avatar>
-            <q-icon name="bar_chart" color="grey-7" />
-          </q-item-section>
-          <q-item-section>
-            <q-item-label>Statistiques</q-item-label>
-          </q-item-section>
-        </q-item>
-
-        <q-item
-          clickable
-          v-ripple
           to="/app3/quotites"
           class="nav-item q-mb-xs"
           active-class="nav-item-active"
@@ -433,6 +418,21 @@
           </q-item-section>
           <q-item-section>
             <q-item-label>Quotités</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-item
+          clickable
+          v-ripple
+          to="/app3/statistiques"
+          class="nav-item q-mb-xs"
+          active-class="nav-item-active"
+        >
+          <q-item-section avatar>
+            <q-icon name="bar_chart" color="grey-7" />
+          </q-item-section>
+          <q-item-section>
+            <q-item-label>Statistiques</q-item-label>
           </q-item-section>
         </q-item>
 

@@ -302,7 +302,7 @@ const quantites = ref<Record<string, number>>({});
 const search = ref('');
 const filterType = ref<string | null>(null);
 const filterMonth = ref<number | null>(null);
-const filterYear = ref<number | null>(new Date().getFullYear());
+const filterYear = ref<number | null>(2026);
 const monthOptions = [
   { label: 'Tous', value: null },
   { label: 'Janvier', value: 1 },
@@ -332,7 +332,7 @@ const remises = ref<Remise[]>([]);
 
 const form = ref<Partial<Remise>>({
   date: new Date(),
-  exercice: new Date().getFullYear(),
+  exercice: 2026,
   numeroRemise: '',
   type: 'Remise',
   timbres: { 100: 0, 200: 0, 300: 0, 500: 0, 600: 0, 1000: 0 },
@@ -489,7 +489,7 @@ const openDialog = (remise?: Remise) => {
 
     form.value = {
       date: new Date(),
-      exercice: new Date().getFullYear(),
+      exercice: 2026,
       numeroRemise: `REM-${new Date().getFullYear()}-${nextNum.toString().padStart(4, '0')}`,
       type: 'Remise',
       timbres: empty,
@@ -512,7 +512,7 @@ const onSubmit = async () => {
 
     const data = {
       mairieId,
-      exercice: form.value.exercice || new Date().getFullYear(),
+      exercice: form.value.exercice || 2026,
       date: dateValue,
       type: form.value.type || 'Remise',
       numeroRemise: form.value.numeroRemise!,
@@ -606,3 +606,4 @@ onMounted(() => {
   })();
 });
 </script>
+

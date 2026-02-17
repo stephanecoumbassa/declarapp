@@ -302,7 +302,7 @@ const quantites = ref<Record<string, number>>({});
 const search = ref('');
 const filterType = ref<string | null>(null);
 const filterMonth = ref<number | null>(null);
-const filterYear = ref<number | null>(new Date().getFullYear());
+const filterYear = ref<number | null>(2026);
 const monthOptions = [
   { label: 'Tous', value: null },
   { label: 'Janvier', value: 1 },
@@ -335,7 +335,7 @@ const form = ref<Partial<TimbresApprovisionnement>>({
   date: new Date(),
   timbres: { 500: 0, 1000: 0, 3000: 0 },
   total: 0,
-  exercice: new Date().getFullYear(),
+  exercice: 2026,
   observations: '',
 });
 
@@ -483,7 +483,7 @@ const openDialog = (appro?: TimbresApprovisionnement) => {
       date: new Date(),
       timbres: empty,
       total: 0,
-      exercice: new Date().getFullYear(),
+      exercice: 2026,
       observations: '',
     };
   }
@@ -502,7 +502,7 @@ const onSubmit = async () => {
 
     const data = {
       mairieId,
-      exercice: form.value.exercice || new Date().getFullYear(),
+      exercice: form.value.exercice || 2026,
       date: dateValue,
       type: form.value.type || 'initial',
       timbres: buildTimbresFromQuantites(),
@@ -595,3 +595,4 @@ onMounted(() => {
   })();
 });
 </script>
+

@@ -263,7 +263,7 @@ const form = ref<Partial<BalanceEntree>>({
   date: new Date(),
   timbres: { 100: 0, 200: 0, 300: 0, 500: 0, 600: 0, 1000: 0 },
   total: 0,
-  exercice: new Date().getFullYear(),
+  exercice: 2026,
   commentaires: '',
 });
 
@@ -396,7 +396,7 @@ const openDialog = (balance?: BalanceEntree) => {
       date: new Date(),
       timbres: empty,
       total: 0,
-      exercice: new Date().getFullYear(),
+      exercice: 2026,
       commentaires: '',
     };
   }
@@ -413,7 +413,7 @@ const onSubmit = async () => {
     // S'assurer que la date est un nouvel objet Date pour éviter les problèmes de clonage
     const dateValue = form.value.date ? new Date(form.value.date) : now;
 
-    const exerciceValue = form.value.exercice || new Date().getFullYear();
+    const exerciceValue = form.value.exercice || 2026;
 
     // Vérifier qu'il n'existe pas déjà une balance d'entrée pour cet exercice
     /*
@@ -543,3 +543,4 @@ onMounted(() => {
   })();
 });
 </script>
+

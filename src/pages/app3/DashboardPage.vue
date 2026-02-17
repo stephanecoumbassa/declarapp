@@ -332,7 +332,7 @@ interface Operation {
 }
 
 // Filtre par année
-const currentYear = new Date().getFullYear();
+const currentYear = 2026;
 const selectedYear = ref(currentYear);
 const yearOptions = ref<number[]>([]);
 
@@ -359,7 +359,7 @@ const stats = computed(() => {
   // Compter les opérations du mois en cours
   const today = new Date();
   const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
+  const currentYear = 2026;
 
   const approsMois = approvisionnements.value.filter((a) => {
     const date = new Date(a.date);

@@ -257,7 +257,7 @@ function resetFilters() {
 }
 
 async function calculateNextNumeroPiece() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   const declarationsThisYear = await db.declarations
     .where('exercice')
     .equals(currentYear)

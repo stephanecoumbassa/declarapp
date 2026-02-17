@@ -4,7 +4,8 @@
       <!-- En-tête avec statistiques -->
       <div class="col-12">
         <div class="page-header fade-in">
-          <h1 class="text-h4 text-weight-bold q-mb-xs gradient-text">Tableau de Bord</h1>
+          <br />
+          <div class="text-h5">Tableau de Bord</div>
           <p class="text-grey-6">Vue d'ensemble de vos activités</p>
         </div>
 

@@ -1,4 +1,4 @@
-﻿import { db, DEFAULT_MAIRIE_ID, type Quotite, type TimbresQuotite } from './db';
+import { db, DEFAULT_MAIRIE_ID, type Quotite, type TimbresQuotite } from './db';
 import type {
   Declaration,
   BordereauRecette,
@@ -47,7 +47,7 @@ export async function seedDefaultData() {
   // 2. Utilisateur admin par défaut
   await db.utilisateurs.add({
     username: 'admin',
-    password: 'admin123', // Doit être hashé en production
+    password: 'Sigobc@2026!', // Doit être hashé en production
     nom: 'Administrateur',
     prenom: 'Système',
     email: 'admin@tresor.sn',
@@ -1362,7 +1362,7 @@ export async function seedBordereaux(personnelIds: number[], count: number = 80)
   const now = new Date();
 
   // Créer des bordereaux répartis sur les exercices avec des dates cohérentes
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
   let numeroGlobal = 1;
 
   for (let i = 0; i < count; i++) {
@@ -1520,7 +1520,7 @@ export async function seedApprovisionnements(personnelIds: number[], count: numb
 
   const approvisionnements: Partial<Approvisionnement>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -1581,7 +1581,7 @@ export async function seedRemises(personnelIds: number[], count: number = 50) {
 
   const remises: Partial<Remise>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -1642,7 +1642,7 @@ export async function seedVersements(personnelIds: number[], count: number = 60)
 
   const versements: Partial<Versement>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -1761,7 +1761,7 @@ export async function seedPrevisions(
 
   const previsions: Partial<Prevision>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const montantPrevu = randomAmount(500000, 10000000);
@@ -1982,7 +1982,7 @@ export async function seedBordereauMandats(personnelIds: number[], count: number
   const now = new Date();
 
   // Créer des bordereaux répartis sur les exercices avec des dates cohérentes
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
   let numeroGlobal = 1;
 
   for (let i = 0; i < count; i++) {
@@ -2178,7 +2178,7 @@ export async function seedTimbresApprovisionnements(personnelIds: number[], coun
 
   const approvisionnements: Partial<TimbresApprovisionnement>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -2232,7 +2232,7 @@ export async function seedTimbresRemises(personnelIds: number[], count: number =
 
   const remises: Partial<TimbresRemise>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);
@@ -2285,7 +2285,7 @@ export async function seedTimbresVersements(personnelIds: number[], count: numbe
 
   const versements: Partial<TimbresVersement>[] = [];
   const now = new Date();
-  const exercices = [2024, 2025, 2026];
+  const exercices = [2026];
 
   for (let i = 0; i < count; i++) {
     const exercice = randomChoice(exercices);

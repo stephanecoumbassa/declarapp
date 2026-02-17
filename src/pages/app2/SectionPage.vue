@@ -132,10 +132,10 @@ import { openPrintWindowWithMessage } from 'src/utils/printUrl';
 const $q = useQuasar();
 const activeTab = ref('section1');
 const loading = ref(false);
-const selectedExercice = ref(new Date().getFullYear());
+const selectedExercice = ref(2026);
 
 const exerciceOptions = computed(() => {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   return Array.from({ length: 5 }, (_, i) => ({
     label: `Exercice ${currentYear - i}`,
     value: currentYear - i,

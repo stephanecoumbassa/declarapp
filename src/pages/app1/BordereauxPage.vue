@@ -289,7 +289,7 @@ function resetFilters() {
 }
 
 async function calculateNextNumeroBordereau() {
-  const currentYear = new Date().getFullYear();
+  const currentYear = 2026;
   const bordereauxThisYear = await db.bordereauxRecette
     .where('annee')
     .equals(currentYear)

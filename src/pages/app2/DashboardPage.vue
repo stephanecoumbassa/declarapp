@@ -76,7 +76,7 @@
       <div class="col-12">
         <div class="row q-col-gutter-md">
           <div class="col-12 col-sm-6 col-md col-lg">
-            <q-card class="stat-card" style="border-left: 4px solid #E67E22">
+            <q-card class="stat-card" style="border-left: 4px solid #e67e22">
               <q-card-section>
                 <div class="row items-center">
                   <div class="col">
@@ -97,7 +97,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md col-lg">
-            <q-card class="stat-card" style="border-left: 4px solid #2E7D32">
+            <q-card class="stat-card" style="border-left: 4px solid #2e7d32">
               <q-card-section>
                 <div class="row items-center">
                   <div class="col">
@@ -113,7 +113,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md col-lg">
-            <q-card class="stat-card" style="border-left: 4px solid #2E7D32">
+            <q-card class="stat-card" style="border-left: 4px solid #2e7d32">
               <q-card-section>
                 <div class="row items-center">
                   <div class="col">
@@ -130,7 +130,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md col-lg">
-            <q-card class="stat-card" style="border-left: 4px solid #DC2626">
+            <q-card class="stat-card" style="border-left: 4px solid #dc2626">
               <q-card-section>
                 <div class="row items-center">
                   <div class="col">
@@ -147,7 +147,7 @@
           </div>
 
           <div class="col-12 col-sm-6 col-md col-lg">
-            <q-card class="stat-card" style="border-left: 4px solid #E67E22">
+            <q-card class="stat-card" style="border-left: 4px solid #e67e22">
               <q-card-section>
                 <div class="row items-center">
                   <div class="col">
@@ -327,7 +327,7 @@ interface Operation {
 }
 
 // Filtre par année
-const currentYear = new Date().getFullYear();
+const currentYear = 2026;
 const selectedYear = ref(currentYear);
 const yearOptions = ref<number[]>([]);
 
@@ -357,7 +357,7 @@ const stats = computed(() => {
   // Compter les opérations du mois en cours
   const today = new Date();
   const currentMonth = today.getMonth();
-  const currentYear = today.getFullYear();
+  const currentYear = 2026;
 
   const approsMois = approvisionnements.value.filter((a) => {
     const date = new Date(a.date);
@@ -382,7 +382,6 @@ const stats = computed(() => {
     versementsMois,
   };
 });
-
 
 const operationsColumns = [
   { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
@@ -426,8 +425,8 @@ const calculateStock = () => {
   });
 
   // 1. Ajouter les balances d'entrée (BE-S1 uniquement)
-  const balancesBES1 = balancesEntree.value.filter((b) =>
-    b.type.includes('BE-S1') || b.type.includes('INITIAL') || b.type.includes('Stock')
+  const balancesBES1 = balancesEntree.value.filter(
+    (b) => b.type.includes('BE-S1') || b.type.includes('INITIAL') || b.type.includes('Stock'),
   );
 
   balancesBES1.forEach((balance) => {
