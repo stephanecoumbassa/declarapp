@@ -1,4 +1,4 @@
-import { db, DEFAULT_MAIRIE_ID, type Quotite, type TimbresQuotite } from './db';
+﻿import { db, DEFAULT_MAIRIE_ID, type Quotite, type TimbresQuotite } from './db';
 import type {
   Declaration,
   BordereauRecette,
@@ -1593,12 +1593,12 @@ export async function seedRemises(personnelIds: number[], count: number = 50) {
 
     // Générer des quantités aléatoires pour chaque valeur de timbre
     const timbres: Timbres = {
-      100: randomAmount(50, 500),
-      200: randomAmount(40, 400),
-      300: randomAmount(30, 300),
-      500: randomAmount(20, 200),
-      600: randomAmount(10, 100),
-      1000: randomAmount(5, 50),
+      100: randomAmount(10, 80),
+      200: randomAmount(8, 60),
+      300: randomAmount(5, 40),
+      500: randomAmount(3, 25),
+      600: randomAmount(2, 15),
+      1000: randomAmount(1, 10),
     };
 
     // Calculer le total

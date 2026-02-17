@@ -75,6 +75,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue';
 import type { SectionIIIEntry } from '../types';
 import { exportToCsv } from 'src/utils/exportCsv';
 
@@ -103,7 +104,7 @@ const formatMontant = (montant: number) => {
 
 // const formatNumber = (num: number) => new Intl.NumberFormat('fr-FR').format(num);
 
-const columns = (() => {
+const columns = computed(() => {
   const base = [
     { name: 'date', label: 'Date', field: 'date', align: 'left' as const, sortable: true },
     { name: 'type', label: 'Nature', field: 'type', align: 'center' as const, sortable: true },
@@ -133,10 +134,10 @@ const columns = (() => {
     { name: 'solde', label: 'Solde', field: 'solde', align: 'right' as const, sortable: true },
   ];
   return [...base, ...priceCols, ...tail];
-})();
+});
 
 function exportCsv() {
-  exportToCsv(props.data, columns, 'section3-timbres');
+  exportToCsv(props.data, columns.value, 'section3-timbres');
 }
 </script>
 

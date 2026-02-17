@@ -122,7 +122,7 @@
       </div>
 
       <!-- Stock par valeur -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12 col-md-6">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12 col-md-6">
         <ChartCard
           title="Répartition du Stock par Valeur"
           :chart-config="stockChartConfig"
@@ -131,7 +131,7 @@
       </div>
 
       <!-- Valeur du stock -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12 col-md-6">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12 col-md-6">
         <ChartCard
           title="Valeur du Stock par Type"
           :chart-config="valeurChartConfig"
@@ -140,7 +140,7 @@
       </div>
 
       <!-- Évolution mensuelle -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12">
         <ChartCard
           title="Évolution des Opérations"
           :chart-config="evolutionChartConfig"
@@ -150,7 +150,7 @@
       </div>
 
       <!-- Tableau détaillé par type de ticket -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12">
         <q-card class="details-card">
           <q-card-section class="bg-grey-1">
             <div class="text-h6 text-grey-8">Détails par Type de Ticket</div>
@@ -218,7 +218,7 @@
       </div>
 
       <!-- Statistiques d'activité -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12 col-md-6">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12 col-md-6">
         <q-card class="activity-card">
           <q-card-section class="bg-grey-1">
             <div class="text-h6 text-grey-8">Activité de la Période</div>
@@ -297,7 +297,7 @@
       </div>
 
       <!-- Alertes et recommandations -->
-      <div v-if="!loading && stats.stockTotal > 0" class="col-12 col-md-6">
+      <div v-if="!loading && stats.stockTotal !== 0" class="col-12 col-md-6">
         <q-card class="alerts-card">
           <q-card-section class="bg-grey-1">
             <div class="text-h6 text-grey-8">Alertes et Recommandations</div>
